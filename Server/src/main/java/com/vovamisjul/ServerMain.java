@@ -1,0 +1,7 @@
+package com.vovamisjul;
+
+public class ServerMain {
+    public static void main(String[] args) {
+        System.out.println("hi Server");
+    }
+}
