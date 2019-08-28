@@ -1,11 +1,15 @@
-package com.vovamisjul.Model;
+package com.vovamisjul.Model.Users;
+
+import com.vovamisjul.Model.Dialog;
+import org.apache.logging.log4j.*;
 
 import java.io.*;
 import java.net.Socket;
 
 public abstract class AbstractUser {
-    protected BufferedReader in;
-    protected BufferedWriter out;
+    public BufferedReader in;
+    public BufferedWriter out;
+    protected static final Logger logger = LogManager.getLogger(AbstractUser.class);
 
     public String getName() {
         return name;

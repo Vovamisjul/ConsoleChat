@@ -1,6 +1,9 @@
 package com.vovamisjul.Model;
 
-import com.vovamisjul.Model.MyLogger.MyLogger;
+import com.vovamisjul.Model.Users.Agent;
+import com.vovamisjul.Model.Users.Client;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -9,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Server {
+    protected static final Logger logger = LogManager.getLogger(Server.class);
     private ArrayList<Agent> agents = new ArrayList<Agent>();
 
     public void start() {
@@ -18,14 +22,14 @@ public class Server {
             int port = scanner.nextInt();
             try {
                 ServerSocket serverSocket = new ServerSocket(port);
-                MyLogger.info("Server created");
+                logger.info("Server started");
                 processUsers(serverSocket);
             } catch (IOException e) {
-                MyLogger.error(e.getMessage());
+                logger.error(e.getMessage(), e);
             }
         }
         catch (Exception e) {
-            MyLogger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
             return;
         }
     }
@@ -34,7 +38,7 @@ public class Server {
         while (true) {
             try {
                 Socket userSocket = serverSocket.accept();
-                MyLogger.info("Client connected: " + userSocket.toString());
+                logger.info("Client connected: " + userSocket.toString());
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -69,12 +73,12 @@ public class Server {
 
                             }
                         } catch (IOException e) {
-                            MyLogger.error(e.getMessage());
+                            logger.error(e.getMessage(), e);
                         }
                     }
                 }).start();
             } catch (IOException e) {
-                MyLogger.error(e.getMessage());
+                logger.error(e.getMessage(), e);
             }
         }
     }

@@ -1,6 +1,9 @@
 package com.vovamisjul.Model;
 
-import com.vovamisjul.Model.MyLogger.MyLogger;
+import com.vovamisjul.Model.Users.Agent;
+import com.vovamisjul.Model.Users.Client;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,12 +15,13 @@ public class Dialog{
     private Thread toAgent;
     private boolean active = true;
     private ArrayList<Agent> agents;
+    protected static final Logger logger = LogManager.getLogger(Dialog.class);
 
     public Dialog(Agent agent, Client client, ArrayList<Agent> agents) {
         this.agent = agent;
         this.client = client;
         this.agents = agents;
-        MyLogger.info("Chat started");
+        logger.info("Dialog started");
     }
 
     public void start(String message) {
@@ -25,7 +29,7 @@ public class Dialog{
             agent.out.write(client.getName()+ ": " + message+'\n');
             agent.out.flush();
         } catch (IOException e) {
-            MyLogger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
         toAgent = new Thread(() -> {
             try {
@@ -39,15 +43,15 @@ public class Dialog{
                     agent.out.flush();
                 }
             } catch (IOException e) {
-                MyLogger.error(e.getMessage());
+                logger.error(e.getMessage(), e);
             }
             agents.remove(agent);
-            MyLogger.info("dialog end");
+            logger.info("Dialog ended");
             try {
                 client.in.close();
                 agent.out.close();
             } catch (IOException e) {
-                MyLogger.error(e.getMessage());
+                logger.error(e.getMessage(), e);
             }
         });
         toClient = new Thread(() -> {
@@ -62,15 +66,15 @@ public class Dialog{
                     client.out.flush();
                 }
             } catch (IOException e) {
-                MyLogger.error(e.getMessage());
+                logger.error(e.getMessage(), e);
             }
             agents.remove(agent);
-            MyLogger.info("dialog end");
+            logger.info("Dialog ended");
             try {
                 agent.in.close();
                 client.out.close();
             } catch (IOException e) {
-                MyLogger.error(e.getMessage());
+                logger.error(e.getMessage(), e);
             }
         });
         toClient.start();

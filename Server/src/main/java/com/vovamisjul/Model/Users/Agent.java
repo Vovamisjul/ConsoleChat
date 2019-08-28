@@ -1,6 +1,5 @@
-package com.vovamisjul.Model;
+package com.vovamisjul.Model.Users;
 
-import com.vovamisjul.Model.MyLogger.MyLogger;
 
 import java.io.*;
 
@@ -10,7 +9,7 @@ public class Agent extends AbstractUser {
 
     public Agent(BufferedReader in, BufferedWriter out, String name) {
         super(in, out, name);
-        MyLogger.info("Agent " + name + " register");
+        logger.info("Agent " + name + " register");
     }
 
     public boolean isVacant() {
