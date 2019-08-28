@@ -1,7 +1,9 @@
 package com.vovamisjul;
 
+import com.vovamisjul.Model.Server;
+
 public class ServerMain {
     public static void main(String[] args) {
-        System.out.println("hi Server");
+        new Server().start();
     }
 }
