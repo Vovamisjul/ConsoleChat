@@ -30,18 +30,15 @@ public class User {
 
     private void dialog() {
         System.out.println("Enter /register [role] [name] to start");
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    while (!endDialog) {
-                        writerServer.write(in.nextLine()+'\n');
-                        writerServer.flush();
-                    }
-                } catch (IOException e) {
-                    endDialog = true;
-                    System.out.println(e.getMessage());
+        new Thread(() -> {
+            try {
+                while (!endDialog) {
+                    writerServer.write(in.nextLine()+'\n');
+                    writerServer.flush();
                 }
+            } catch (IOException e) {
+                endDialog = true;
+                System.out.println(e.getMessage());
             }
         }).start();
         new Thread(new Runnable() {

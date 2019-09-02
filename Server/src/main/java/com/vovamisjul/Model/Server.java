@@ -39,42 +39,39 @@ public class Server {
             try {
                 Socket userSocket = serverSocket.accept();
                 logger.info("Client connected: " + userSocket.toString());
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            BufferedReader in = new BufferedReader(new InputStreamReader(userSocket.getInputStream()));
-                            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(userSocket.getOutputStream()));
-                            while (true) {
-                                String message = in.readLine();
-                                if (message.startsWith("/register agent ")) {
-                                    Agent agent = new Agent(in, out, message.substring("/register agent ".length()));
-                                    agents.add(agent);
+                new Thread(() -> {
+                    try {
+                        BufferedReader in = new BufferedReader(new InputStreamReader(userSocket.getInputStream()));
+                        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(userSocket.getOutputStream()));
+                        while (true) {
+                            String message = in.readLine();
+                            if (message.startsWith("/register agent ")) {
+                                Agent agent = new Agent(in, out, message.substring("/register agent ".length()));
+                                agents.add(agent);
+                                break;
+                            }
+                            else if (message.startsWith("/register client ")) {
+                                Client client = new Client(in, out, message.substring("/register client ".length()));
+                                Agent freeAgent = findFreeAgent();
+                                if (freeAgent == null) {
+                                    out.write("There are no free agents. Try register later\n");
+                                    out.flush();
+                                } else {
+                                    out.write("Print your message to start\n");
+                                    out.flush();
+                                    message = in.readLine();
+                                    new Dialog(freeAgent, client, Server.this.agents).start(message);
                                     break;
                                 }
-                                else if (message.startsWith("/register client ")) {
-                                    Client client = new Client(in, out, message.substring("/register client ".length()));
-                                    Agent freeAgent = findFreeAgent();
-                                    if (freeAgent == null) {
-                                        out.write("There are no free agents. Try register later\n");
-                                        out.flush();
-                                    } else {
-                                        out.write("Print your message to start\n");
-                                        out.flush();
-                                        message = in.readLine();
-                                        new Dialog(freeAgent, client, Server.this.agents).start(message);
-                                        break;
-                                    }
-                                }
-                                else {
-                                    out.write("There are no such command\n");
-                                    out.flush();
-                                }
-
                             }
-                        } catch (IOException e) {
-                            logger.error(e.getMessage(), e);
+                            else {
+                                out.write("There are no such command\n");
+                                out.flush();
+                            }
+
                         }
+                    } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
                     }
                 }).start();
             } catch (IOException e) {
