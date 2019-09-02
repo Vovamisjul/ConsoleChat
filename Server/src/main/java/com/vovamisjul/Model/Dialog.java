@@ -29,7 +29,7 @@ public class Dialog{
             agent.out.write(client.getName()+ ": " + message+'\n');
             agent.out.flush();
         } catch (IOException e) {
-            logger.error(e.getMessage(), e);
+            logger.error(e.getMessage());
         }
         toAgent = new Thread(() -> {
             try {
@@ -43,7 +43,7 @@ public class Dialog{
                     agent.out.flush();
                 }
             } catch (IOException e) {
-                logger.error(e.getMessage(), e);
+                logger.error(e.getMessage());
             }
             agents.remove(agent);
             logger.info("Dialog ended");
@@ -51,7 +51,7 @@ public class Dialog{
                 client.in.close();
                 agent.out.close();
             } catch (IOException e) {
-                logger.error(e.getMessage(), e);
+                logger.error(e.getMessage());
             }
         });
         toClient = new Thread(() -> {
@@ -66,7 +66,7 @@ public class Dialog{
                     client.out.flush();
                 }
             } catch (IOException e) {
-                logger.error(e.getMessage(), e);
+                logger.error(e.getMessage());
             }
             agents.remove(agent);
             logger.info("Dialog ended");
@@ -74,7 +74,7 @@ public class Dialog{
                 agent.in.close();
                 client.out.close();
             } catch (IOException e) {
-                logger.error(e.getMessage(), e);
+                logger.error(e.getMessage());
             }
         });
         toClient.start();

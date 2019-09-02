@@ -25,11 +25,11 @@ public class Server {
                 logger.info("Server started");
                 processUsers(serverSocket);
             } catch (IOException e) {
-                logger.error(e.getMessage(), e);
+                logger.error(e.getMessage());
             }
         }
         catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.error(e.getMessage());
             return;
         }
     }
@@ -71,11 +71,11 @@ public class Server {
 
                         }
                     } catch (IOException e) {
-                        logger.error(e.getMessage(), e);
+                        logger.error(e.getMessage());
                     }
                 }).start();
             } catch (IOException e) {
-                logger.error(e.getMessage(), e);
+                logger.error(e.getMessage());
             }
         }
     }

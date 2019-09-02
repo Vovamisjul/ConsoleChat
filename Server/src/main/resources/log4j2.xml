@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="debug" name="XMLConfigTest" packages="org.apache.logging.log4j.test">
+<Configuration status="WARN" name="XMLConfigTest" packages="org.apache.logging.log4j.test">
 <Properties>
     <Property name="filename">target/test.log</Property>
 </Properties>
@@ -7,15 +7,7 @@
 
 <Appenders>
     <Console name="STDOUT">
-        <PatternLayout pattern="%m MDC%X%n"/>
-    </Console>
-    <Console name="FLOW">
-        <!-- this pattern outputs class name and line number -->
-        <PatternLayout pattern="%C{1}.%M %m %ex%n"/>
-        <filters>
-            <MarkerFilter marker="FLOW" onMatch="ACCEPT" onMismatch="NEUTRAL"/>
-            <MarkerFilter marker="EXCEPTION" onMatch="ACCEPT" onMismatch="DENY"/>
-        </filters>
+        <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
     </Console>
     <File name="File" fileName="${filename}">
         <PatternLayout>
@@ -25,22 +17,6 @@
 </Appenders>
 
 <Loggers>
-    <Logger name="org.apache.logging.log4j.test1" level="debug" additivity="false">
-        <ThreadContextMapFilter>
-            <KeyValuePair key="test" value="123"/>
-        </ThreadContextMapFilter>
-        <AppenderRef ref="STDOUT"/>
-    </Logger>
-
-    <Logger name="org.apache.logging.log4j.test2" level="debug" additivity="false">
-        <Property name="user">${sys:user.name}</Property>
-        <AppenderRef ref="File">
-            <ThreadContextMapFilter>
-                <KeyValuePair key="test" value="123"/>
-            </ThreadContextMapFilter>
-        </AppenderRef>
-        <AppenderRef ref="STDOUT" level="error"/>
-    </Logger>
 
     <Root level="trace">
         <AppenderRef ref="STDOUT"/>
