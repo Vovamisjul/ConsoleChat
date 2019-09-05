@@ -1,10 +1,8 @@
 package com.vovamisjul.Model.Users;
 
-import com.vovamisjul.Model.Dialog;
 import org.apache.logging.log4j.*;
 
 import java.io.*;
-import java.net.Socket;
 
 public abstract class AbstractUser {
     public BufferedReader in;

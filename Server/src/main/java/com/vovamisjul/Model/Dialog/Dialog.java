@@ -1,4 +1,4 @@
-package com.vovamisjul.Model;
+package com.vovamisjul.Model.Dialog;
 
 import com.vovamisjul.Model.Users.Agent;
 import com.vovamisjul.Model.Users.Client;
