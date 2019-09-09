@@ -31,7 +31,6 @@ public class Server {
         }
         catch (Exception e) {
             logger.error(e.getMessage());
-            return;
         }
     }
 

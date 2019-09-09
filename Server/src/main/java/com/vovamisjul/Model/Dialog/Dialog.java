@@ -11,8 +11,6 @@ import java.util.ArrayList;
 public class Dialog{
     private Agent agent;
     private Client client;
-    private Thread toClient;
-    private Thread toAgent;
     private boolean active = true;
     private ArrayList<Agent> agents;
     protected static final Logger logger = LogManager.getLogger(Dialog.class);
@@ -31,7 +29,7 @@ public class Dialog{
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
-        toAgent = new Thread(() -> {
+        Thread toAgent = new Thread(() -> {
             try {
                 while (active) {
                     String message1 = client.in.readLine();
@@ -39,7 +37,7 @@ public class Dialog{
                         active = false;
                         break;
                     }
-                    agent.out.write(client.getName()+ ": " + message1 + '\n');
+                    agent.out.write(client.getName() + ": " + message1 + '\n');
                     agent.out.flush();
                 }
             } catch (IOException e) {
@@ -54,7 +52,7 @@ public class Dialog{
                 logger.error(e.getMessage());
             }
         });
-        toClient = new Thread(() -> {
+        Thread toClient = new Thread(() -> {
             try {
                 while (active) {
                     String message12 = agent.in.readLine();
@@ -62,7 +60,7 @@ public class Dialog{
                         active = false;
                         break;
                     }
-                    client.out.write(agent.getName()+ ": " + message12 + '\n');
+                    client.out.write(agent.getName() + ": " + message12 + '\n');
                     client.out.flush();
                 }
             } catch (IOException e) {
