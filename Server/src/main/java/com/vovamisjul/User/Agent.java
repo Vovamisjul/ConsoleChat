@@ -9,6 +9,6 @@ public class Agent extends AbstractUser {
 
     @Override
     public String toString() {
-        return "Agent: " + name;
+        return "Agent " + name;
     }
 }

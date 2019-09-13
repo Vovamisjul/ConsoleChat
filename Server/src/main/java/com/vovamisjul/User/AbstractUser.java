@@ -41,6 +41,6 @@ public abstract class AbstractUser {
 
     @Override
     public String toString() {
-        return "User: " + name;
+        return "User " + name;
     }
 }

@@ -12,7 +12,7 @@ public class Client extends AbstractUser {
     }
     @Override
     public String toString() {
-        return "Client: " + name;
+        return "Client " + name;
     }
 
 }
