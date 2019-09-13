@@ -1,0 +1,2 @@
+var userType;
+var userId;

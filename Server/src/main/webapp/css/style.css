@@ -1,0 +1,21 @@
+#dialog {
+    width: 400px;
+}
+#dialog .correspondence {
+    border: 1px solid;
+    height: 200px;
+    overflow-y: auto;
+    padding: 10px 5px;
+}
+#dialog .correspondence p{
+    margin: 0;
+}
+#dialog .message {
+    padding: 5px 0;
+}
+#dialog .message input {
+    width: calc(100% - 69px);
+}
+#dialog .message button {
+    width: 65px;
+}
