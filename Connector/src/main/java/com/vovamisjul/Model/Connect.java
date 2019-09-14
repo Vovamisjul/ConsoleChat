@@ -20,6 +20,7 @@ public class Connect {
 
     public void start() {
         try {
+            logger.info("Connector started");
             while (true) {
                 Socket user = serverSocket.accept();
                 new Redirector(user).start();

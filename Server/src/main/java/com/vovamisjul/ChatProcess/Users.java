@@ -57,4 +57,28 @@ public class Users {
         }
         return null;
     }
+
+    public static void deleteDialog(Dialog dialog) {
+        dialogs.remove(dialog);
+    }
+
+    public static void addFreeAgent(Agent agent) {
+        if (freeClients.size()==0) {
+            freeAgents.add(agent);
+        }
+        else {
+            Client freeClient = freeClients.pollFirst();
+            dialogs.add(new Dialog(freeClient, agent));
+        }
+    }
+
+    public static void addFreeClient(Client client) {
+        if (freeAgents.size()==0) {
+            freeClients.add(client);
+        }
+        else {
+            Agent freeAgent = freeAgents.pollFirst();
+            dialogs.add(new Dialog(client, freeAgent));
+        }
+    }
 }

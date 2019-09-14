@@ -29,6 +29,7 @@ public class Redirector extends Thread {
 
     public Redirector(Socket user) {
         try {
+            logger.info("client: " + user + " registered");
             clientIn = new BufferedReader(new InputStreamReader(user.getInputStream()));
             clientOut = new BufferedWriter(new OutputStreamWriter(user.getOutputStream()));
         } catch (IOException e) {
@@ -44,12 +45,9 @@ public class Redirector extends Thread {
                 try {
                 String parameters = (userId == null && userType == null) ? "" : ("?userType=" + userType + "&userId=" + userId);
                 HttpGet request = new HttpGet(url+parameters);
-                System.out.println("request: " + request);
                 HttpResponse response = client.execute(request);
-                System.out.println("executed");
                 BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
                 String messageJson = rd.readLine();
-                System.out.println("json: " + messageJson);
                 ArrayList<Message> messages = new Gson().fromJson(messageJson, new TypeToken<ArrayList<Message>>(){}.getType());
                 if (messages != null) {
                     for (Message message:messages
@@ -61,7 +59,7 @@ public class Redirector extends Thread {
                 response.getEntity().getContent().close();
                 Thread.sleep(500);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage(), e);
                 }
             }
         });

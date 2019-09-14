@@ -18,7 +18,7 @@ public class UserReceiver extends HttpServlet {
         String userId = req.getParameter("userId");
         PrintWriter writer = resp.getWriter();
         if (userId == null) {
-            if (!message.matches("^/reg \\w+ \\w+$")) {
+            if (!message.matches("^/(reg \\w+ \\w+$|exit)")) {
                 Responce responce = new Responce(406, "There are no such command");
                 writer.println(new Gson().toJson(responce));
                 return;
@@ -28,17 +28,22 @@ public class UserReceiver extends HttpServlet {
                 String[] params = param.split(" ");
                 Responce responce = new Responce(200, Users.addNewUser(params[0], params[1]), params[0]);
                 writer.println(new Gson().toJson(responce));
+                return;
             }
         }
-        else {
-            int id = Integer.parseInt(userId);
-            String type = req.getParameter("userType");
-            Dialog dialog = Users.getDialog(id);
-            if (dialog != null)
-                dialog.sendTo(type, message);
-            else
-                Users.getUser(id).addNewMessage(message);
+        int id = Integer.parseInt(userId);
+        String type = req.getParameter("userType");
+        Dialog dialog = Users.getDialog(id);
+        if (dialog != null) {
+            if (message.equals("/exit")) {
+                dialog.exit(type);
+                return;
+            }
+            dialog.sendTo(type, message);
         }
+        else
+            Users.getUser(id).addNewMessage(message);
+
     }
 }
 

@@ -45,4 +45,16 @@ public class Dialog {
         }
         return null;
     }
+
+    public void exit(String type) {
+        Users.deleteDialog(this);
+        switch (type) {
+            case "client":
+                Users.addFreeAgent(agent);
+                break;
+            case "agent":
+                Users.addFreeClient(client);
+                break;
+        }
+    }
 }

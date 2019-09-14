@@ -1,6 +1,11 @@
 function sendMessage() {
     let input = $("#dialog input");
     let message = input.val();
+    if (message==="/exit") {
+        userId = undefined;
+        userType = undefined;
+        return;
+    }
     let yourMessage = "<p> You: " + message + "</p>"
     $("#dialog .correspondence").append(yourMessage);
     input.val("");
