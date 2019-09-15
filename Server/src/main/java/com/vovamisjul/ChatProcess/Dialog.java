@@ -14,6 +14,8 @@ public class Dialog {
     public Dialog(Client client, Agent agent) {
         this.client = client;
         this.agent = agent;
+        this.agent.addNewStartMessage("You chat now with " + agent);
+        this.client.addNewStartMessage("You chat now with " + client);
         logger.info("Dialog with " + agent + " and " + client + " created");
     }
 

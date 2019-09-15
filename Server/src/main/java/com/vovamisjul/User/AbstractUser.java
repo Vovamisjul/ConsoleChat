@@ -35,6 +35,10 @@ public abstract class AbstractUser {
         unsentMessages.add(new Message(name, message));
     }
 
+    public void addNewStartMessage(String message) {
+        unsentMessages.addFirst(new Message("Server", message));
+    }
+
     public Message pollMessage() {
         return unsentMessages.pollFirst();
     }

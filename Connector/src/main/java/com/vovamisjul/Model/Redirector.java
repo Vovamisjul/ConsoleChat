@@ -90,6 +90,9 @@ public class Redirector extends Thread {
                         userType = userResponce.userType;
                     }
                 }
+                if (clientReq.equals("/exit")) {
+                    userType = userId = null;
+                }
             }
         }
         catch (IOException e) {
