@@ -47,4 +47,16 @@ public abstract class AbstractUser {
     public String toString() {
         return "User " + name;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this)
+            return true;
+        if (obj == null)
+            return false;
+        if (obj.getClass() != this.getClass())
+            return false;
+        AbstractUser user = (AbstractUser)obj;
+        return (user.name.equals(name) && user.id == id);
+    }
 }
