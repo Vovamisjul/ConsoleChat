@@ -39,6 +39,10 @@ public class UserReceiver extends HttpServlet {
                 dialog.exit(type);
                 return;
             }
+            if (message.equals("/leave")) {
+                dialog.leave();
+                return;
+            }
             dialog.sendTo(type, message);
         }
         else

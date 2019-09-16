@@ -49,7 +49,6 @@ public class Dialog {
     }
 
     public void exit(String type) {
-        Users.deleteDialog(this);
         switch (type) {
             case "client":
                 Users.addFreeAgent(agent);
@@ -58,5 +57,11 @@ public class Dialog {
                 Users.addFreeClient(client);
                 break;
         }
+    }
+
+    public void leave() {
+        Users.deleteDialog(this);
+        Users.addFreeClient(client);
+        Users.addFreeAgent(agent);
     }
 }
