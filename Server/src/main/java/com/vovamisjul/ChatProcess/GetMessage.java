@@ -34,15 +34,6 @@ public class GetMessage extends HttpServlet {
         }
         PrintWriter writer = resp.getWriter();
         writer.println(new Gson().toJson(messages));
-        AsyncContext asyncContext = req.startAsync();
-        asyncContext.complete();
-        asyncContext.start(()-> {
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
     }
 
 }
