@@ -3,6 +3,7 @@ package com.vovamisjul.ChatProcess;
 import com.google.gson.Gson;
 import org.apache.logging.log4j.*;
 
+import javax.servlet.AsyncContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -33,6 +34,15 @@ public class GetMessage extends HttpServlet {
         }
         PrintWriter writer = resp.getWriter();
         writer.println(new Gson().toJson(messages));
+        AsyncContext asyncContext = req.startAsync();
+        asyncContext.complete();
+        asyncContext.start(()-> {
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
 }
