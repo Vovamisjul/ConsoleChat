@@ -12,6 +12,8 @@ import java.io.PrintWriter;
 
 @WebServlet("/UserReceiver")
 public class UserReceiver extends HttpServlet {
+    
+    // Too long method. Maybe move parsing logic to another method or class
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String message = req.getParameter("message");
@@ -51,6 +53,8 @@ public class UserReceiver extends HttpServlet {
     }
 }
 
+// Maybe move this class to another file
+// Typo. Maybe "Response"
 class Responce {
     public int code;
     public String message;
