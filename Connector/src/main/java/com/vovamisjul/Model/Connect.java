@@ -1,5 +1,11 @@
 package com.vovamisjul.Model;
 
+
+/*
+ * You have log4j2.xml and import classes that use log4j.xml
+ * Maybe replace with import org.apache.logging.log4j.LogManager;
+ *                    import org.apache.logging.log4j.Logger;
+ */
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 

@@ -37,9 +37,14 @@ public class Redirector extends Thread {
         }
     }
 
+    // Method does too much.
     @Override
     public void run() {
+        
+        // Remove to another class
         Thread getMessages = new Thread(()-> {
+            
+            // url can be private final static String 
             String url = "http://localhost:8081/unnamed/GetMessage";
             while (true) {
                 try {
@@ -66,6 +71,8 @@ public class Redirector extends Thread {
         getMessages.start();
         try {
             while (true) {
+                
+                // url can be private final static String
                 String url = "http://localhost:8081/unnamed/UserReceiver";
                 String clientReq = clientIn.readLine();
                 HttpPost request = new HttpPost(url);
@@ -82,6 +89,7 @@ public class Redirector extends Thread {
                     String messageJson = rd.readLine();
                     Responce userResponce = new Gson().fromJson(messageJson, new TypeToken<Responce>() {
                     }.getType());
+                    // response codes can be public final static int in Response class. Just numbers don't mean anything
                     if (userResponce.code == 406) {
                         clientOut.write(userResponce.message + "\n");
                     }
@@ -109,6 +117,8 @@ public class Redirector extends Thread {
     }
 }
 
+// Make fields private
+// Move to another file
 class Message {
     public String from;
     public String text;
@@ -119,6 +129,9 @@ class Message {
     }
 }
 
+// Typo in "Response"
+// Make fields private
+// Move to another file
 class Responce {
     public int code;
     public String message;

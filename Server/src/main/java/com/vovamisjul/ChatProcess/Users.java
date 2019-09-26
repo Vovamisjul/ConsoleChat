@@ -5,7 +5,10 @@ import com.vovamisjul.User.Client;
 
 import java.util.*;
 
+// This class is used by many threads but it isn't thread-safe. 
 public class Users {
+    
+    // User interfaces Deque, List instead of ArrayDeque, ArrayList.
     private static ArrayDeque<Client> freeClients = new ArrayDeque<>();
     private static ArrayDeque<Agent> freeAgents = new ArrayDeque<>();
     private static ArrayList<Dialog> dialogs = new ArrayList<>();
