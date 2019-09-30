@@ -4,14 +4,13 @@ import com.vovamisjul.User.Agent;
 import com.vovamisjul.User.Client;
 
 import java.util.*;
-
 public class Users {
     private static ArrayDeque<Client> freeClients = new ArrayDeque<>();
     private static ArrayDeque<Agent> freeAgents = new ArrayDeque<>();
     private static ArrayList<Dialog> dialogs = new ArrayList<>();
     private static int id = 0;
 
-    public static int addNewUser(String type, String name) {
+    public static synchronized int addNewUser(String type, String name) {
         switch (type) {
             case "client":
                 if (freeAgents.size()==0) {
@@ -36,7 +35,7 @@ public class Users {
         return id-1;
     }
 
-    public static Dialog getDialog(int id) {
+    public static synchronized Dialog getDialog(int id) {
         for (Dialog dialog: dialogs
              ) {
             if (dialog.getAgent().getId()==id || dialog.getClient().getId()==id)
@@ -44,7 +43,7 @@ public class Users {
         }
         return null;
     }
-    public static AbstractUser getUser(int id) {
+    public static synchronized AbstractUser getUser(int id) {
         for (AbstractUser user: freeClients
         ) {
             if (user.getId()==id)
@@ -58,11 +57,11 @@ public class Users {
         return null;
     }
 
-    public static void deleteDialog(Dialog dialog) {
+    public static synchronized void deleteDialog(Dialog dialog) {
         dialogs.remove(dialog);
     }
 
-    public static void addFreeAgent(Agent agent) {
+    public static synchronized void addFreeAgent(Agent agent) {
         if (freeClients.size()==0) {
             freeAgents.add(agent);
         }
@@ -72,7 +71,7 @@ public class Users {
         }
     }
 
-    public static void addFreeClient(Client client) {
+    public static synchronized void addFreeClient(Client client) {
         if (freeAgents.size()==0) {
             freeClients.add(client);
         }
