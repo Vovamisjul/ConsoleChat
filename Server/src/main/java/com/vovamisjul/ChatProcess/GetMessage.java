@@ -19,21 +19,22 @@ public class GetMessage extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String userId = req.getParameter("userId");
-        if (userId == null)
-            return;
-        int id = Integer.parseInt(userId);
-        Dialog dialog = Users.getDialog(id);
-        if (dialog == null)
-            return;
-        String type = req.getParameter("userType");
-        Message message;
-        ArrayList<Message> messages = new ArrayList<>();
-        while ((message = dialog.pollFrom(type)) != null) {
-            messages.add(message);
+        try {
+            String userId = req.getParameter("userId");
+            int id = Integer.parseInt(userId);
+            Dialog dialog = Users.getDialog(id);
+            String type = req.getParameter("userType");
+            Message message;
+            ArrayList<Message> messages = new ArrayList<>();
+            while ((message = dialog.pollFrom(type)) != null) {
+                messages.add(message);
+            }
+            PrintWriter writer = resp.getWriter();
+            writer.println(new Gson().toJson(messages));
         }
-        PrintWriter writer = resp.getWriter();
-        writer.println(new Gson().toJson(messages));
+        catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
     }
 
 }

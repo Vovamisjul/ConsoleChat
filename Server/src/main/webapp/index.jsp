@@ -2,21 +2,42 @@
 <html>
 <head>
     <link href="${pageContext.request.contextPath}/css/style.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/css/jquery-ui.css" rel="stylesheet">
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery-3.4.1.min.js"></script>
-    <script src="${pageContext.request.contextPath}/js/user.js"></script>
-    <script src="${pageContext.request.contextPath}/js/messages.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery-ui.min.js"></script>
+    <script src="${pageContext.request.contextPath}/js/User.js"></script>
+    <script src="${pageContext.request.contextPath}/js/Ajax.js"></script>
+    <script src="${pageContext.request.contextPath}/js/chat.js"></script>
     <title>Chat</title>
 </head>
-<body onload="init_chat()">
+<body onload="init()">
     <h1>Chat</h1>
-    <div id="dialog">
+    <div style="display: none" id="dialog">
         <div class="correspondence">
-            <p>Type "/reg [client/agent] [nickname]" to start chat</p>
         </div>
         <div class="message">
             <input/>
-            <button onclick="sendMessage()">Send</button>
+            <button>Send</button>
         </div>
+        <div class="control">
+            <button id="leave"></button>
+            <button id="exit"></button>
+        </div>
+    </div>
+    <div id="register">
+        <p>REGISTRATION</p>
+        <p>
+            <input class="name" name="name" placeholder="Your name"/>
+        </p>
+        <p>
+            <select class="type" name="type">
+                <option value="agent">Agent</option>
+                <option value="client">Client</option>
+            </select>
+        </p>
+        <p>
+            <button class="sendForm">Register</button>
+        </p>
     </div>
 </body>
 </html>

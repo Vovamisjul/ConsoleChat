@@ -33,15 +33,15 @@ public class DialogTest {
         assertEquals(new Client("Ivan", id), user);
     }
 
-    @Test
-    public void leave() {
-        final int id = 2;
-        Users.addNewUser("agent", "001");
-        Users.addNewUser("agent", "002");
-        Users.addNewUser("client", "Ivan");
-        Dialog dialog = Users.getDialog(id);
-        dialog.leave();
-        Dialog dialog2 = Users.getDialog(id);
-        assertEquals(new Agent("002", 1), dialog2.getAgent());
-    }
+//    @Test
+//    public void leave() {
+//        final int id = 2;
+//        Users.addNewUser("agent", "001");
+//        Users.addNewUser("agent", "002");
+//        Users.addNewUser("client", "Ivan");
+//        Dialog dialog = Users.getDialog(id);
+//        dialog.leave();
+//        Dialog dialog2 = Users.getDialog(id);
+//        assertEquals(new Agent("002", 1), dialog2.getAgent());
+//    }
 }

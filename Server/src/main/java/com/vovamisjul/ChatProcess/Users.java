@@ -7,7 +7,7 @@ import java.util.*;
 public class Users {
     private static ArrayDeque<Client> freeClients = new ArrayDeque<>();
     private static ArrayDeque<Agent> freeAgents = new ArrayDeque<>();
-    private static ArrayList<Dialog> dialogs = new ArrayList<>();
+    private static List<Dialog> dialogs = new ArrayList<>();
     private static int id = 0;
 
     public static synchronized int addNewUser(String type, String name) {
@@ -35,14 +35,15 @@ public class Users {
         return id-1;
     }
 
-    public static synchronized Dialog getDialog(int id) {
+    public static synchronized Dialog getDialog(int userId) {
         for (Dialog dialog: dialogs
              ) {
-            if (dialog.getAgent().getId()==id || dialog.getClient().getId()==id)
+            if (dialog.getAgent().getId() == userId || dialog.getClient().getId() == userId)
                 return dialog;
         }
         return null;
     }
+
     public static synchronized AbstractUser getUser(int id) {
         for (AbstractUser user: freeClients
         ) {

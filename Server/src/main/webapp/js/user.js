@@ -1,2 +1,0 @@
-var userType;
-var userId;
