@@ -1,12 +1,12 @@
-package com.vovamisjul.ChatProcess;
-import com.vovamisjul.User.AbstractUser;
-import com.vovamisjul.User.Agent;
-import com.vovamisjul.User.Client;
+package com.vovamisjul.chatlogic;
+import com.vovamisjul.chatlogic.user.AbstractUser;
+import com.vovamisjul.chatlogic.user.Agent;
+import com.vovamisjul.chatlogic.user.Client;
 
 import java.util.*;
 public class Users {
-    private static ArrayDeque<Client> freeClients = new ArrayDeque<>();
-    private static ArrayDeque<Agent> freeAgents = new ArrayDeque<>();
+    private static Deque<Client> freeClients = new ArrayDeque<>();
+    private static Deque<Agent> freeAgents = new ArrayDeque<>();
     private static List<Dialog> dialogs = new ArrayList<>();
     private static int id = 0;
 
@@ -80,5 +80,9 @@ public class Users {
             Agent freeAgent = freeAgents.pollFirst();
             dialogs.add(new Dialog(client, freeAgent));
         }
+    }
+
+    public static synchronized List<Agent> getFreeAgents() {
+        return new ArrayList<>(freeAgents);
     }
 }

@@ -1,4 +1,4 @@
-package com.vovamisjul.ChatProcess;
+package com.vovamisjul.chatlogic;
 
 public class Message {
     public String from;

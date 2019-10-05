@@ -17,11 +17,11 @@
         </div>
         <div class="message">
             <input/>
-            <button>Send</button>
+            <button id="sendMsg">Send</button>
         </div>
         <div class="control">
-            <button id="leave"></button>
-            <button id="exit"></button>
+            <button id="leave">Leave</button>
+            <button id="exit">Exit</button>
         </div>
     </div>
     <div id="register">

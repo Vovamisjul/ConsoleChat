@@ -48,7 +48,7 @@ class Ajax {
         if (this.user.isRegistered())
             $.ajax({
                 url: "/chat/Leave",
-                type: "GET",
+                type: "POST",
                 data: {userId: this.user.id}
             });
     }
@@ -56,7 +56,7 @@ class Ajax {
         if (this.user.isRegistered())
             $.ajax({
                 url: "/chat/Exit",
-                type: "GET",
+                type: "POST",
                 data: {userType: this.user.type, userId: this.user.id},
                 success: function () {
                     this.user.unregister();

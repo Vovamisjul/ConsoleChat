@@ -1,11 +1,10 @@
-package com.vovamisjul.User;
+package com.vovamisjul.chatlogic.user;
 
-import com.vovamisjul.ChatProcess.Message;
+import com.vovamisjul.chatlogic.Message;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 
 public abstract class AbstractUser {
     protected String name;

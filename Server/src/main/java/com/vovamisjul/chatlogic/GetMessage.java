@@ -1,9 +1,8 @@
-package com.vovamisjul.ChatProcess;
+package com.vovamisjul.chatlogic;
 
 import com.google.gson.Gson;
 import org.apache.logging.log4j.*;
 
-import javax.servlet.AsyncContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;

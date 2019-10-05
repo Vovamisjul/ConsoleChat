@@ -1,7 +1,7 @@
-package com.vovamisjul.ChatProcess;
+package com.vovamisjul.chatlogic;
 
-import com.vovamisjul.User.Agent;
-import com.vovamisjul.User.Client;
+import com.vovamisjul.chatlogic.user.Agent;
+import com.vovamisjul.chatlogic.user.Client;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

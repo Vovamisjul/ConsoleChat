@@ -1,6 +1,4 @@
-package com.vovamisjul.User;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+package com.vovamisjul.chatlogic.user;
 
 public class Agent extends AbstractUser {
     public Agent(String name, int id) {

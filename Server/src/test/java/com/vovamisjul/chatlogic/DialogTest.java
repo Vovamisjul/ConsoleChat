@@ -1,8 +1,7 @@
-package com.vovamisjul.ChatProcess;
+package com.vovamisjul.chatlogic;
 
-import com.vovamisjul.User.AbstractUser;
-import com.vovamisjul.User.Agent;
-import com.vovamisjul.User.Client;
+import com.vovamisjul.chatlogic.user.AbstractUser;
+import com.vovamisjul.chatlogic.user.Client;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

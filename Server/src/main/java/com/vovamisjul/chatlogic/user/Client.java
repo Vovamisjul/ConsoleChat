@@ -1,9 +1,4 @@
-package com.vovamisjul.User;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.util.ArrayList;
+package com.vovamisjul.chatlogic.user;
 
 public class Client extends AbstractUser {
 

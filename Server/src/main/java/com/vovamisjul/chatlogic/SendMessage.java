@@ -1,7 +1,5 @@
-package com.vovamisjul.ChatProcess;
+package com.vovamisjul.chatlogic;
 
-import com.google.gson.Gson;
-import com.vovamisjul.User.AbstractUser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -11,7 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 @WebServlet("/SendMessage")
 public class SendMessage extends HttpServlet {
@@ -20,7 +17,6 @@ public class SendMessage extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String message = req.getParameter("message");
         String userId = req.getParameter("userId");
-        PrintWriter writer = resp.getWriter();
         try {
             int id = Integer.parseInt(userId);
             String type = req.getParameter("userType");

@@ -1,4 +1,4 @@
-package com.vovamisjul.ChatProcess;
+package com.vovamisjul.chatlogic;
 
 import com.google.gson.Gson;
 import org.apache.logging.log4j.LogManager;
@@ -27,14 +27,3 @@ public class Register extends HttpServlet {
     }
 }
 
-class Response {
-    public String message;
-    public int userId;
-    public String userType;
-
-    public Response(String message, int userId, String userType) {
-        this.message = message;
-        this.userId = userId;
-        this.userType = userType;
-    }
-}

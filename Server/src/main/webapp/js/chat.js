@@ -8,7 +8,7 @@ function init() {
         if (e.keyCode === 13)
             ajax.sendMessage.bind(ajax)();
     });
-    $("#dialog button").click(function () {
+    $("#sendMsg").click(function () {
         ajax.sendMessage.bind(ajax)();
     });
     $("#leave").click(function () {
