@@ -5,6 +5,7 @@ import com.vovamisjul.chatlogic.Message;
 import com.vovamisjul.chatlogic.Response;
 import com.vovamisjul.chatlogic.Users;
 import com.vovamisjul.chatlogic.user.Agent;
+import com.vovamisjul.chatlogic.user.Client;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,11 +19,6 @@ import java.util.List;
 @RestController
 public class ChatController {
     protected static final Logger logger = LogManager.getLogger(ChatController.class);
-
-    @GetMapping("/getFreeAgents")
-    public List<Agent> getFreeAgents() {
-        return Users.getFreeAgents();
-    }
 
     @PostMapping("exit")
     public void exit(@RequestParam(value="userId") String userId,
@@ -88,5 +84,37 @@ public class ChatController {
         catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
+    }
+
+    @GetMapping("/freeAgents")
+    public List<Agent> getFreeAgents() {
+        return Users.getFreeAgents();
+    }
+
+    @GetMapping("/allAgents")
+    public List<Agent> getAllAgents() {
+        return Users.getAllAgents();
+    }
+
+    @GetMapping("/agent")
+    public Agent getAgent(@RequestParam(value="id") int id) {
+        return Users.getAgent(id);
+    }
+
+    @GetMapping("/freeAgentsCount")
+    public int getFreeAgentsCount() { return Users.getFreeAgents().size(); }
+
+    @GetMapping("/dialogs")
+    public List<Dialog> getDialog() { return Users.getDialogs(); }
+
+    @GetMapping("/dialog")
+    public Dialog getDialog(@RequestParam(value="id") int id) { return Users.getDialog(id); }
+
+    @GetMapping("/awaitingClients")
+    public List<Client> getAwaitingClients() { return Users.getFreeClients(); }
+
+    @GetMapping("/client")
+    public Agent getClient(@RequestParam(value="id") int id) {
+        return Users.getClient(id);
     }
 }

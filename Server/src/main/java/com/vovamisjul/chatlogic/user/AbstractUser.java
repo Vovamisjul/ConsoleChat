@@ -1,6 +1,7 @@
 package com.vovamisjul.chatlogic.user;
 
 import com.vovamisjul.chatlogic.Message;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -57,5 +58,10 @@ public abstract class AbstractUser {
             return false;
         AbstractUser user = (AbstractUser)obj;
         return (user.name.equals(name) && user.id == id);
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(id).append(name).toHashCode();
     }
 }

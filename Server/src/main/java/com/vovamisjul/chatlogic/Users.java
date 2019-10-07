@@ -85,4 +85,51 @@ public class Users {
     public static synchronized List<Agent> getFreeAgents() {
         return new ArrayList<>(freeAgents);
     }
+
+    public static synchronized List<Client> getFreeClients() {
+        return new ArrayList<>(freeClients);
+    }
+
+    public static synchronized List<Agent> getAllAgents() {
+        List<Agent> agents = new LinkedList<>();
+        for (Dialog dialog:dialogs
+             ) {
+            agents.add((dialog.getAgent()));
+        }
+        agents.addAll(freeAgents);
+        return agents;
+    }
+
+    public static synchronized Agent getAgent(int id) {
+        for (Dialog dialog:dialogs
+        ) {
+            if (dialog.getAgent().getId() == id)
+                return dialog.getAgent();
+        }
+        for (Agent agent:freeAgents
+             ) {
+            if (agent.getId() == id)
+                return agent;
+        }
+        return null;
+    }
+
+    public static synchronized Client getClient(int id) {
+        for (Dialog dialog:dialogs
+        ) {
+            if (dialog.getClient().getId() == id)
+                return dialog.getClient();
+        }
+        for (Client client:freeClients
+        ) {
+            if (client.getId() == id)
+                return client;
+        }
+        return null;
+    }
+
+    public static synchronized List<Dialog> getDialogs() {
+        return dialogs;
+    }
+
 }
