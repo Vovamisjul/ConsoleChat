@@ -56,7 +56,9 @@ public class Dialog {
             case "agent":
                 Users.addFreeClient(client);
                 break;
+            default: return;
         }
+        Users.deleteDialog(this);
     }
 
     public void leave() {

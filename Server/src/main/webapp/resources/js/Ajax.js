@@ -4,7 +4,7 @@ class Ajax {
     }
     register() {
         $.ajax({
-            url: "/chat/Register",
+            url: "/chat/register",
             type: "POST",
             data:{name: $("#register .name").val(), type: $("#register .type").val()},
             success: function (data) {
@@ -24,7 +24,7 @@ class Ajax {
         $("#dialog .correspondence").append(yourMessage);
         input.val("");
         $.ajax({
-            url:"/chat/SendMessage",
+            url:"/chat/sendMessage",
             type:"POST",
             data:{userType: this.user.type, message: message, userId: this.user.id}
         });
@@ -32,7 +32,7 @@ class Ajax {
     getMessage() {
         if (this.user.isRegistered())
             $.ajax({
-                url: "/chat/GetMessage",
+                url: "/chat/getMessages",
                 type: "GET",
                 data: {userType: this.user.type, userId: this.user.id},
                 success: function (message) {
@@ -47,7 +47,7 @@ class Ajax {
     leave() {
         if (this.user.isRegistered())
             $.ajax({
-                url: "/chat/Leave",
+                url: "/chat/leave",
                 type: "POST",
                 data: {userId: this.user.id}
             });
@@ -55,7 +55,7 @@ class Ajax {
     exit() {
         if (this.user.isRegistered())
             $.ajax({
-                url: "/chat/Exit",
+                url: "/chat/exit",
                 type: "POST",
                 data: {userType: this.user.type, userId: this.user.id},
                 success: function () {

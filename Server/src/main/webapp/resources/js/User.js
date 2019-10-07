@@ -1,17 +1,15 @@
 class User {
-    constructor() {
-        this.registered = false;
-    }
+    #registered = false;
     register(id, type) {
         this.id = id;
         this.type = type;
-        this.registered = true;
+        this.#registered = true;
     }
     unregister() {
-        this.registered = false;
+        this.#registered = false;
     }
     isRegistered() {
-        return this.registered;
+        return this.#registered;
     }
 }
 
