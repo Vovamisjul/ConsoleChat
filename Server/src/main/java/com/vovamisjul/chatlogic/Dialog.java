@@ -48,24 +48,24 @@ public class Dialog {
         return null;
     }
 
-    public void exit(String type) {
+    public void exit(String type, Users users) {
         switch (type) {
             case "client":
-                Users.addFreeAgent(agent);
+                users.addFreeAgent(agent);
                 logger.info(client + "exit from gialog");
                 break;
             case "agent":
-                Users.addFreeClient(client);
+                users.addFreeClient(client);
                 logger.info(agent + "exit from gialog");
                 break;
             default: return;
         }
-        Users.deleteDialog(this);
+        users.deleteDialog(this);
     }
 
-    public void leave() {
-        Users.deleteDialog(this);
-        Users.addFreeClient(client);
-        Users.addFreeAgent(agent);
+    public void leave(Users users) {
+        users.deleteDialog(this);
+        users.addFreeClient(client);
+        users.addFreeAgent(agent);
     }
 }

@@ -2,15 +2,17 @@ package com.vovamisjul.chatlogic;
 import com.vovamisjul.chatlogic.user.AbstractUser;
 import com.vovamisjul.chatlogic.user.Agent;
 import com.vovamisjul.chatlogic.user.Client;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
+@Component
 public class Users {
     private static Deque<Client> freeClients = new ArrayDeque<>();
     private static Deque<Agent> freeAgents = new ArrayDeque<>();
     private static List<Dialog> dialogs = new ArrayList<>();
     private static int id = 0;
 
-    public static synchronized int addNewUser(String type, String name) {
+    public synchronized int addNewUser(String type, String name) {
         switch (type) {
             case "client":
                 if (freeAgents.size()==0) {
@@ -36,7 +38,7 @@ public class Users {
         return id-1;
     }
 
-    public static synchronized Dialog getDialog(int userId) {
+    public synchronized Dialog getDialog(int userId) {
         for (Dialog dialog: dialogs
              ) {
             if (dialog.getAgent().getId() == userId || dialog.getClient().getId() == userId)
@@ -45,7 +47,7 @@ public class Users {
         return null;
     }
 
-    public static synchronized AbstractUser getUser(int id) {
+    public synchronized AbstractUser getUser(int id) {
         for (AbstractUser user: freeClients
         ) {
             if (user.getId()==id)
@@ -59,11 +61,11 @@ public class Users {
         return null;
     }
 
-    public static synchronized void deleteDialog(Dialog dialog) {
+    public synchronized void deleteDialog(Dialog dialog) {
         dialogs.remove(dialog);
     }
 
-    public static synchronized void addFreeAgent(Agent agent) {
+    public synchronized void addFreeAgent(Agent agent) {
         if (freeClients.size()==0) {
             freeAgents.add(agent);
         }
@@ -73,7 +75,7 @@ public class Users {
         }
     }
 
-    public static synchronized void addFreeClient(Client client) {
+    public synchronized void addFreeClient(Client client) {
         if (freeAgents.size()==0) {
             freeClients.add(client);
         }
@@ -83,15 +85,15 @@ public class Users {
         }
     }
 
-    public static synchronized List<Agent> getFreeAgents() {
+    public synchronized List<Agent> getFreeAgents() {
         return new ArrayList<>(freeAgents);
     }
 
-    public static synchronized List<Client> getFreeClients() {
+    public synchronized List<Client> getFreeClients() {
         return new ArrayList<>(freeClients);
     }
 
-    public static synchronized List<Agent> getAllAgents() {
+    public synchronized List<Agent> getAllAgents() {
         List<Agent> agents = new LinkedList<>();
         for (Dialog dialog:dialogs
              ) {
@@ -101,7 +103,7 @@ public class Users {
         return agents;
     }
 
-    public static synchronized Agent getAgent(int id) {
+    public synchronized Agent getAgent(int id) {
         for (Dialog dialog:dialogs
         ) {
             if (dialog.getAgent().getId() == id)
@@ -115,7 +117,7 @@ public class Users {
         return null;
     }
 
-    public static synchronized Client getClient(int id) {
+    public synchronized Client getClient(int id) {
         for (Dialog dialog:dialogs
         ) {
             if (dialog.getClient().getId() == id)
@@ -129,7 +131,7 @@ public class Users {
         return null;
     }
 
-    public static synchronized List<Dialog> getDialogs() {
+    public synchronized List<Dialog> getDialogs() {
         return dialogs;
     }
 

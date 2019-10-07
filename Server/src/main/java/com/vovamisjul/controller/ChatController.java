@@ -23,23 +23,26 @@ public class ChatController {
 
     @PostMapping("exit")
     public void exit(@RequestParam(value="userId") int userId,
-                     @RequestParam(value="userType") String userType) {
-        Dialog dialog = Users.getDialog(userId);
+                     @RequestParam(value="userType") String userType,
+                     Users users) {
+        Dialog dialog = users.getDialog(userId);
         if (dialog != null)
-            dialog.exit(userType);
+            dialog.exit(userType, users);
     }
 
     @PostMapping("leave")
-    public void leave(@RequestParam(value="userId") int userId) {
-        Dialog dialog = Users.getDialog(userId);
+    public void leave(@RequestParam(value="userId") int userId,
+                      Users users) {
+        Dialog dialog = users.getDialog(userId);
         if (dialog != null)
-            dialog.leave();
+            dialog.leave(users);
     }
 
     @GetMapping("getMessages")
     public List<Message> getMessages(@RequestParam(value="userId") int userId,
-                                     @RequestParam(value="userType") String userType) {
-        Dialog dialog = Users.getDialog(userId);
+                                     @RequestParam(value="userType") String userType,
+                                     Users users) {
+        Dialog dialog = users.getDialog(userId);
         if (dialog == null)
             return null;
         Message message;
@@ -52,9 +55,10 @@ public class ChatController {
 
     @PostMapping("register")
     public Response register(@RequestParam(value="name") String name,
-                             @RequestParam(value="type") String type) {
+                             @RequestParam(value="type") String type,
+                             Users users) {
         try {
-            return new Response("Welcome, " + name + " to chat!", Users.addNewUser(type, name), type);
+            return new Response("Welcome, " + name + " to chat!", users.addNewUser(type, name), type);
         }
         catch (IllegalArgumentException e) {
             logger.error(e.getMessage(), e);
@@ -65,46 +69,50 @@ public class ChatController {
     @PostMapping("sendMessage")
     public void sendMessage(@RequestParam(value="userId") int userId,
                              @RequestParam(value="userType") String userType,
-                             @RequestParam(value="message") String message) {
-        Dialog dialog = Users.getDialog(userId);
+                             @RequestParam(value="message") String message,
+                            Users users) {
+        Dialog dialog = users.getDialog(userId);
         if (dialog != null) {
             dialog.sendTo(userType, message);
         } else {
-            AbstractUser user = Users.getUser(userId);
+            AbstractUser user = users.getUser(userId);
             if (user != null)
                 user.addNewMessage(message);
         }
     }
 
     @GetMapping("/freeAgents")
-    public List<Agent> getFreeAgents() {
-        return Users.getFreeAgents();
+    public List<Agent> getFreeAgents(Users users) {
+        return users.getFreeAgents();
     }
 
     @GetMapping("/allAgents")
-    public List<Agent> getAllAgents() {
-        return Users.getAllAgents();
+    public List<Agent> getAllAgents(Users users) {
+        return users.getAllAgents();
     }
 
     @GetMapping("/agent")
-    public Agent getAgent(@RequestParam(value="id") int id) {
-        return Users.getAgent(id);
+    public Agent getAgent(@RequestParam(value="id") int id,
+                          Users users) {
+        return users.getAgent(id);
     }
 
     @GetMapping("/freeAgentsCount")
-    public int getFreeAgentsCount() { return Users.getFreeAgents().size(); }
+    public int getFreeAgentsCount(Users users) { return users.getFreeAgents().size(); }
 
     @GetMapping("/dialogs")
-    public List<Dialog> getDialog() { return Users.getDialogs(); }
+    public List<Dialog> getDialog(Users users) { return users.getDialogs(); }
 
     @GetMapping("/dialog")
-    public Dialog getDialog(@RequestParam(value="id") int id) { return Users.getDialog(id); }
+    public Dialog getDialog(@RequestParam(value="id") int id,
+                            Users users) { return users.getDialog(id); }
 
     @GetMapping("/awaitingClients")
-    public List<Client> getAwaitingClients() { return Users.getFreeClients(); }
+    public List<Client> getAwaitingClients(Users users) { return users.getFreeClients(); }
 
     @GetMapping("/client")
-    public Client getClient(@RequestParam(value="id") int id) {
-        return Users.getClient(id);
+    public Client getClient(@RequestParam(value="id") int id,
+                            Users users) {
+        return users.getClient(id);
     }
 }
