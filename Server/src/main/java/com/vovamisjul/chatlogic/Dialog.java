@@ -52,9 +52,11 @@ public class Dialog {
         switch (type) {
             case "client":
                 Users.addFreeAgent(agent);
+                logger.info(client + "exit from gialog");
                 break;
             case "agent":
                 Users.addFreeClient(client);
+                logger.info(agent + "exit from gialog");
                 break;
             default: return;
         }

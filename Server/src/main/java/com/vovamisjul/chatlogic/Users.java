@@ -30,6 +30,7 @@ public class Users {
                     dialogs.add(new Dialog(freeClient, new Agent(name, id)));
                 }
                 break;
+            default: throw new IllegalArgumentException("No such type");
         }
         id++;
         return id-1;

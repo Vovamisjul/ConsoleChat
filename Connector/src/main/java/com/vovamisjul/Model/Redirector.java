@@ -12,7 +12,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter;
 
 import java.io.*;
 import java.net.Socket;
@@ -22,8 +21,9 @@ import java.util.List;
 public class Redirector extends Thread {
     private BufferedReader clientIn;
     private BufferedWriter clientOut;
-    private String userId;
+    private int userId;
     private String userType;
+    private boolean registered = false;
     private HttpClient client = HttpClientBuilder.create().build();
     protected static final Logger logger = LogManager.getLogger(Redirector.class);
 
@@ -40,23 +40,26 @@ public class Redirector extends Thread {
     @Override
     public void run() {
         Thread getMessages = new Thread(()-> {
-            String url = "http://localhost:8081/unnamed/GetMessage";
+            String url = "http://localhost:8081/chat/getMessages";
             while (true) {
                 try {
-                String parameters = (userId == null && userType == null) ? "" : ("?userType=" + userType + "&userId=" + userId);
-                HttpGet request = new HttpGet(url+parameters);
-                HttpResponse response = client.execute(request);
-                BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-                String messageJson = rd.readLine();
-                ArrayList<Message> messages = new Gson().fromJson(messageJson, new TypeToken<ArrayList<Message>>(){}.getType());
-                if (messages != null) {
-                    for (Message message:messages
-                         ) {
-                        clientOut.write(message.from+": "+message.text+"\n");
-                        clientOut.flush();
+                    if (registered) {
+                        String parameters = "?userType=" + userType + "&userId=" + userId;
+                        HttpGet request = new HttpGet(url + parameters);
+                        HttpResponse response = client.execute(request);
+                        BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+                        String messageJson = rd.readLine();
+                        ArrayList<Message> messages = new Gson().fromJson(messageJson, new TypeToken<ArrayList<Message>>() {
+                        }.getType());
+                        if (messages != null) {
+                            for (Message message : messages
+                            ) {
+                                clientOut.write(message.from + ": " + message.text + "\n");
+                                clientOut.flush();
+                            }
+                        }
+                        response.getEntity().getContent().close();
                     }
-                }
-                response.getEntity().getContent().close();
                 Thread.sleep(500);
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
@@ -66,32 +69,24 @@ public class Redirector extends Thread {
         getMessages.start();
         try {
             while (true) {
-                String url = "http://localhost:8081/unnamed/UserReceiver";
                 String clientReq = clientIn.readLine();
-                HttpPost request = new HttpPost(url);
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                if (userType != null) {
-                    params.add(new BasicNameValuePair("userType", userType));
-                    params.add(new BasicNameValuePair("userId", userId));
-                }
-                params.add(new BasicNameValuePair("message", clientReq));
-                request.setEntity(new UrlEncodedFormEntity(params));
-                HttpResponse response = client.execute(request);
-                BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-                if (rd.ready()) {
-                    String messageJson = rd.readLine();
-                    Responce userResponce = new Gson().fromJson(messageJson, new TypeToken<Responce>() {
-                    }.getType());
-                    if (userResponce.code == 406) {
-                        clientOut.write(userResponce.message + "\n");
+                if (!registered) {
+                    if (clientReq.startsWith("/register")) {
+                        String[] params = clientReq.substring("/register ".length()).split(" ");
+                        register(params[0], params[1]);
                     }
-                    if (userResponce.code == 200) {
-                        userId = userResponce.userId;
-                        userType = userResponce.userType;
-                    }
+                    else clientOut.write("No such command\n");
                 }
-                if (clientReq.equals("/exit")) {
-                    userType = userId = null;
+                else {
+                    switch (clientReq) {
+                        case "/leave":
+                            leave();
+                            break;
+                        case "/exit":
+                            exit();
+                            break;
+                        default: sendMessage(clientReq);
+                    }
                 }
             }
         }
@@ -107,6 +102,71 @@ public class Redirector extends Thread {
             }
         }
     }
+
+    private void register(String type, String name) {
+        try {
+            HttpPost request = new HttpPost("http://localhost:8081/chat/register");
+            List<NameValuePair> params = new ArrayList<>();
+            params.add(new BasicNameValuePair("name", name));
+            params.add(new BasicNameValuePair("type", type));
+            request.setEntity(new UrlEncodedFormEntity(params));
+            HttpResponse response = client.execute(request);
+            BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+            String messageJson = rd.readLine();
+            Responce userResponse = new Gson().fromJson(messageJson, new TypeToken<Responce>() {
+            }.getType());
+            clientOut.write(userResponse.message + "\n");
+            userId = userResponse.userId;
+            userType = userResponse.userType;
+            registered = true;
+        }
+        catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+
+    private void sendMessage(String clientReq) {
+        try {
+            HttpPost request = new HttpPost("http://localhost:8081/chat/sendMessage");
+            List<NameValuePair> params = new ArrayList<>();
+            params.add(new BasicNameValuePair("userId", String.valueOf(userId)));
+            params.add(new BasicNameValuePair("userType", userType));
+            params.add(new BasicNameValuePair("message", clientReq));
+            request.setEntity(new UrlEncodedFormEntity(params));
+            client.execute(request);
+        }
+        catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+
+    private void exit() {
+        try {
+            HttpPost request = new HttpPost("http://localhost:8081/chat/exit");
+            List<NameValuePair> params = new ArrayList<>();
+            params.add(new BasicNameValuePair("userId", String.valueOf(userId)));
+            params.add(new BasicNameValuePair("userType", userType));
+            request.setEntity(new UrlEncodedFormEntity(params));
+            client.execute(request);
+            registered = false;
+        }
+        catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+
+    private void leave() {
+        try {
+            HttpPost request = new HttpPost("http://localhost:8081/chat/leave");
+            List<NameValuePair> params = new ArrayList<>();
+            params.add(new BasicNameValuePair("userId", String.valueOf(userId)));
+            request.setEntity(new UrlEncodedFormEntity(params));
+            client.execute(request);
+        }
+        catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
 }
 
 class Message {
@@ -120,8 +180,7 @@ class Message {
 }
 
 class Responce {
-    public int code;
     public String message;
-    public String userId;
+    public int userId;
     public String userType;
 }
