@@ -5,8 +5,9 @@
     <link href="${pageContext.request.contextPath}/resources/css/jquery-ui.css" rel="stylesheet">
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery-3.4.1.min.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jsencrypt.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/User.js"></script>
-    <script src="${pageContext.request.contextPath}/resources/js/Ajax.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/Controller.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/chat.js"></script>
     <title>Chat</title>
 </head>
@@ -24,20 +25,37 @@
             <button id="exit">Exit</button>
         </div>
     </div>
-    <div id="register">
-        <p>REGISTRATION</p>
-        <p>
-            <input class="name" name="name" placeholder="Your name"/>
-        </p>
-        <p>
-            <select class="type" name="type">
-                <option value="agent">Agent</option>
-                <option value="client">Client</option>
-            </select>
-        </p>
-        <p>
-            <button class="sendForm">Register</button>
-        </p>
+    <div style="display: flex">
+        <div id="register" class="form">
+            <p>LOGIN</p>
+            <p>
+                <input id="reg_name" name="name" placeholder="Your name"/>
+            </p>
+            <p>
+                <input id="reg_password" name="password" type="password" placeholder="Your password"/>
+            </p>
+            <p>
+                <select id="reg_type" name="type">
+                    <option value="agent">Agent</option>
+                    <option value="client">Client</option>
+                </select>
+            </p>
+            <p>
+                <button class="sendForm">Register</button>
+            </p>
+        </div>
+        <div id="login" class="form">
+            <p>REGISTRATION</p>
+            <p>
+                <input id="login_name" name="name" placeholder="Your name"/>
+            </p>
+            <p>
+                <input id="login_password" name="password" type="password" placeholder="Your password"/>
+            </p>
+            <p>
+                <button class="sendForm">Login</button>
+            </p>
+        </div>
     </div>
 </body>
 </html>

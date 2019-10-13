@@ -7,6 +7,7 @@ import com.vovamisjul.chatlogic.Users;
 import com.vovamisjul.chatlogic.user.AbstractUser;
 import com.vovamisjul.chatlogic.user.Agent;
 import com.vovamisjul.chatlogic.user.Client;
+import com.vovamisjul.database.DataBaseController;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.logging.log4j.LogManager;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,11 +65,30 @@ public class ChatController {
     @ApiOperation(value = "Register user with name and type", response = Response.class)
     @PostMapping("/register")
     public Response register(@ApiParam(value = "Your name", required = true) @RequestParam(value="name") String name,
+                             @ApiParam(value = "Password", required = true) @RequestParam(value="password") String password,
                              @ApiParam(value = "Your type (agent/client)", required = true) @RequestParam(value="type") String type) {
         try {
-            return new Response("Welcome, " + name + " to chat!", users.addNewUser(type, name), type);
+            int id = new DataBaseController().register(name, password, type);
+            users.addNewUser(type, name, id);
+            return new Response("Welcome, " + name + " to chat!", id, type);
         }
-        catch (IllegalArgumentException e) {
+        catch (IllegalArgumentException | SQLException e) {
+            logger.error(e.getMessage(), e);
+            return null;
+        }
+    }
+
+    @ApiOperation(value = "Login user with name and password", response = Response.class)
+    @PostMapping("/login")
+    public Response login(@ApiParam(value = "Your name", required = true) @RequestParam(value="name") String name,
+                             @ApiParam(value = "Password", required = true) @RequestParam(value="password") String password) {
+        try {
+            StringBuilder type = new StringBuilder();
+            int id = new DataBaseController().login(name, password, type);
+            users.addNewUser(type.toString(), name, id);
+            return new Response("Welcome, " + name + " to chat!", id, type.toString());
+        }
+        catch (IllegalArgumentException | SQLException e) {
             logger.error(e.getMessage(), e);
             return null;
         }

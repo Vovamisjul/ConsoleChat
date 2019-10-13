@@ -1,8 +1,11 @@
 function init() {
-    let ajax = new Ajax(new User());
+    let ajax = new Controller(new User());
     setInterval(ajax.getMessage.bind(ajax), 500);
     $("#register .sendForm").click(function () {
         ajax.register.bind(ajax)();
+    });
+    $("#login .sendForm").click(function () {
+        ajax.login.bind(ajax)();
     });
     $("#dialog .message").keydown(function keyDown(e) {
         if (e.keyCode === 13)

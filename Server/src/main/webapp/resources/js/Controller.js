@@ -1,4 +1,5 @@
-class Ajax {
+class Controller {
+
     constructor(user) {
         this.user = user;
     }
@@ -6,15 +7,35 @@ class Ajax {
         $.ajax({
             url: "/chat/register",
             type: "POST",
-            data:{name: $("#register .name").val(), type: $("#register .type").val()},
+            data:{name: $("#reg_name").val(), password: $("#reg_password").val(), type: $("#reg_type").val()},
             success: function (data) {
                 $("#register").hide();
+                $("#login").hide();
                 $("#dialog").show();
                 this.user.register(data.userId, data.userType);
                 let paragraph = "<p>" + data.message + "</p>";
                 $("#dialog .correspondence").empty();
                 $("#dialog .correspondence").append(paragraph);
             }.bind(this),
+            error: alert("Choose other name"),
+            dataType: "json"
+        })
+    }
+    login() {
+        $.ajax({
+            url: "/chat/login",
+            type: "POST",
+            data:{name: $("#login_name").val(), password: $("#login_password").val()},
+            success: function (data) {
+                $("#register").hide();
+                $("#login").hide();
+                $("#dialog").show();
+                this.user.register(data.userId, data.userType);
+                let paragraph = "<p>" + data.message + "</p>";
+                $("#dialog .correspondence").empty();
+                $("#dialog .correspondence").append(paragraph);
+            }.bind(this),
+            error: alert("Incorrect login or password"),
             dataType: "json"
         })
     }
@@ -61,6 +82,9 @@ class Ajax {
                 data: {userType: this.user.type, userId: this.user.id},
                 success: function () {
                     this.user.unregister();
+                    $("#register").show();
+                    $("#login").show();
+                    $("#dialog").hide();
                 }.bind(this)
             });
     }

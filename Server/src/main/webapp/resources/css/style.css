@@ -19,15 +19,16 @@
 #dialog .message button {
     width: 65px;
 }
-#register {
+.form {
+    margin: 0 10px;
     width: 200px;
     padding: 10px;
     border-radius: 5px;
     border: 2px solid;
 }
-#register input{
+.form input{
     width: 100%;
 }
-#register select{
+.form select{
     width: 100%;
 }

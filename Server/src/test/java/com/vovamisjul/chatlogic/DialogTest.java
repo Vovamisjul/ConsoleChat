@@ -18,8 +18,9 @@ public class DialogTest {
 
     @Test
     public void sendToAndPollFrom() {
-        int id = users.addNewUser("agent", "001");
-        users.addNewUser("client", "Ivan");
+        int id = 0;
+        users.addNewUser("agent", "001", id);
+        users.addNewUser("client", "Ivan", 1);
         Dialog dialog = users.getDialog(id);
         dialog.sendTo("agent", "Hello!");
         Message message = dialog.pollFrom("client");
@@ -30,22 +31,27 @@ public class DialogTest {
 
     @Test
     public void exit() {
-        users.addNewUser("agent", "001");
-        int id = users.addNewUser("client", "Ivan");
-        Dialog dialog = users.getDialog(id);
+        int idAgent = 0;
+        users.addNewUser("agent", "001", idAgent);
+        int idClient = 1;
+        users.addNewUser("client", "Ivan", idClient);
+        Dialog dialog = users.getDialog(idClient);
         dialog.exit("agent", users);
-        AbstractUser user = users.getUser(id);
-        assertEquals(new Client("Ivan", id), user);
+        AbstractUser user = users.getUser(idClient);
+        assertEquals(new Client("Ivan", idClient), user);
     }
 
     @Test
     public void leave() {
-        users.addNewUser("agent", "001");
-        int idNewAgent = users.addNewUser("agent", "002");
-        int id = users.addNewUser("client", "Ivan");
-        Dialog dialog = users.getDialog(id);
+        int idAgent = 0;
+        users.addNewUser("agent", "001", idAgent);
+        int idAgent2 = 2;
+        users.addNewUser("agent", "002", idAgent2);
+        int idClient = 1;
+        users.addNewUser("client", "Ivan", idClient);
+        Dialog dialog = users.getDialog(idClient);
         dialog.leave(users);
-        Dialog dialog2 = users.getDialog(id);
-        assertEquals(new Agent("002", idNewAgent), dialog2.getAgent());
+        Dialog dialog2 = users.getDialog(idClient);
+        assertEquals(new Agent("002", idAgent2), dialog2.getAgent());
     }
 }

@@ -15,9 +15,8 @@ public class Users {
     private Deque<Client> freeClients = new ArrayDeque<>();
     private Deque<Agent> freeAgents = new ArrayDeque<>();
     private List<Dialog> dialogs = new ArrayList<>();
-    private int id = 0;
 
-    public synchronized int addNewUser(String type, String name) {
+    public synchronized void addNewUser(String type, String name, int id) {
         switch (type) {
             case "client":
                 if (freeAgents.size()==0) {
@@ -39,8 +38,6 @@ public class Users {
                 break;
             default: throw new IllegalArgumentException("No such type");
         }
-        id++;
-        return id-1;
     }
 
     public synchronized Dialog getDialog(int userId) {
