@@ -1,6 +1,6 @@
 function init() {
     let ajax = new Ajax(new User());
-    setInterval(ajax.getMessage.bind(ajax), 100);
+    setInterval(ajax.getMessage.bind(ajax), 500);
     $("#register .sendForm").click(function () {
         ajax.register.bind(ajax)();
     });

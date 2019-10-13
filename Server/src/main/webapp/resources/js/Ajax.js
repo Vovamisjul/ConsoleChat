@@ -12,6 +12,7 @@ class Ajax {
                 $("#dialog").show();
                 this.user.register(data.userId, data.userType);
                 let paragraph = "<p>" + data.message + "</p>";
+                $("#dialog .correspondence").empty();
                 $("#dialog .correspondence").append(paragraph);
             }.bind(this),
             dataType: "json"

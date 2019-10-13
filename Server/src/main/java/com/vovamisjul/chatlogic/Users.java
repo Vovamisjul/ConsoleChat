@@ -4,13 +4,18 @@ import com.vovamisjul.chatlogic.user.Agent;
 import com.vovamisjul.chatlogic.user.Client;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+
 @Component
 public class Users {
-    private static Deque<Client> freeClients = new ArrayDeque<>();
-    private static Deque<Agent> freeAgents = new ArrayDeque<>();
-    private static List<Dialog> dialogs = new ArrayList<>();
-    private static int id = 0;
+    private Deque<Client> freeClients = new ArrayDeque<>();
+    private Deque<Agent> freeAgents = new ArrayDeque<>();
+    private List<Dialog> dialogs = new ArrayList<>();
+    private int id = 0;
 
     public synchronized int addNewUser(String type, String name) {
         switch (type) {

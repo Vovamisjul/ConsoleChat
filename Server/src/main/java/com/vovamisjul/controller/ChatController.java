@@ -7,6 +7,8 @@ import com.vovamisjul.chatlogic.Users;
 import com.vovamisjul.chatlogic.user.AbstractUser;
 import com.vovamisjul.chatlogic.user.Agent;
 import com.vovamisjul.chatlogic.user.Client;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,29 +21,34 @@ import java.util.List;
 
 @RestController
 public class ChatController {
+    private Users users;
     protected static final Logger logger = LogManager.getLogger(ChatController.class);
 
-    @PostMapping("exit")
-    public void exit(@RequestParam(value="userId") int userId,
-                     @RequestParam(value="userType") String userType,
-                     Users users) {
+    public ChatController(Users users) {
+        this.users = users;
+    }
+
+    @ApiOperation(value = "Exit from chat")
+    @PostMapping("/exit")
+    public void exit(@ApiParam(value = "Your id issued at registration", required = true) @RequestParam(value="userId") int userId,
+                     @ApiParam(value = "Your type (client/agent)", required = true) @RequestParam(value="userType") String userType) {
         Dialog dialog = users.getDialog(userId);
         if (dialog != null)
             dialog.exit(userType, users);
     }
 
-    @PostMapping("leave")
-    public void leave(@RequestParam(value="userId") int userId,
-                      Users users) {
+    @ApiOperation(value = "Leave from chat (you will continue chatting with another agent/client)")
+    @PostMapping("/leave")
+    public void leave(@ApiParam(value = "Your id issued at registration", required = true) @RequestParam(value="userId") int userId) {
         Dialog dialog = users.getDialog(userId);
         if (dialog != null)
             dialog.leave(users);
     }
 
-    @GetMapping("getMessages")
-    public List<Message> getMessages(@RequestParam(value="userId") int userId,
-                                     @RequestParam(value="userType") String userType,
-                                     Users users) {
+    @ApiOperation(value = "Get unread messages")
+    @GetMapping("/getMessages")
+    public List<Message> getMessages(@ApiParam(value = "Your id issued at registration", required = true) @RequestParam(value="userId") int userId,
+                                     @ApiParam(value = "Your type (agent/client)", required = true) @RequestParam(value="userType") String userType) {
         Dialog dialog = users.getDialog(userId);
         if (dialog == null)
             return null;
@@ -53,10 +60,10 @@ public class ChatController {
         return messages;
     }
 
-    @PostMapping("register")
-    public Response register(@RequestParam(value="name") String name,
-                             @RequestParam(value="type") String type,
-                             Users users) {
+    @ApiOperation(value = "Register user with name and type", response = Response.class)
+    @PostMapping("/register")
+    public Response register(@ApiParam(value = "Your name", required = true) @RequestParam(value="name") String name,
+                             @ApiParam(value = "Your type (agent/client)", required = true) @RequestParam(value="type") String type) {
         try {
             return new Response("Welcome, " + name + " to chat!", users.addNewUser(type, name), type);
         }
@@ -66,11 +73,11 @@ public class ChatController {
         }
     }
 
-    @PostMapping("sendMessage")
-    public void sendMessage(@RequestParam(value="userId") int userId,
-                             @RequestParam(value="userType") String userType,
-                             @RequestParam(value="message") String message,
-                            Users users) {
+    @ApiOperation(value = "Send message to server")
+    @PostMapping("/sendMessage")
+    public void sendMessage(@ApiParam(value = "Your id issued at registration", required = true) @RequestParam(value="userId") int userId,
+                            @ApiParam(value = "Your type (agent/client)", required = true) @RequestParam(value="userType") String userType,
+                            @ApiParam(value = "Message to send", required = true) @RequestParam(value="message") String message) {
         Dialog dialog = users.getDialog(userId);
         if (dialog != null) {
             dialog.sendTo(userType, message);
@@ -81,38 +88,43 @@ public class ChatController {
         }
     }
 
+    @ApiOperation(value = "Get free (without client) agents")
     @GetMapping("/freeAgents")
-    public List<Agent> getFreeAgents(Users users) {
+    public List<Agent> getFreeAgents() {
         return users.getFreeAgents();
     }
 
+    @ApiOperation(value = "Get all agents")
     @GetMapping("/allAgents")
-    public List<Agent> getAllAgents(Users users) {
+    public List<Agent> getAllAgents() {
         return users.getAllAgents();
     }
 
+    @ApiOperation(value = "Get agent by id")
     @GetMapping("/agent")
-    public Agent getAgent(@RequestParam(value="id") int id,
-                          Users users) {
+    public Agent getAgent(@ApiParam(value = "Id of the agent", required = true) @RequestParam(value="id") int id) {
         return users.getAgent(id);
     }
 
+    @ApiOperation(value = "Get free agents count")
     @GetMapping("/freeAgentsCount")
-    public int getFreeAgentsCount(Users users) { return users.getFreeAgents().size(); }
+    public int getFreeAgentsCount() { return users.getFreeAgents().size(); }
 
+    @ApiOperation(value = "Get all active dialogs")
     @GetMapping("/dialogs")
-    public List<Dialog> getDialog(Users users) { return users.getDialogs(); }
+    public List<Dialog> getDialog() { return users.getDialogs(); }
 
+    @ApiOperation(value = "Get dialog by id")
     @GetMapping("/dialog")
-    public Dialog getDialog(@RequestParam(value="id") int id,
-                            Users users) { return users.getDialog(id); }
+    public Dialog getDialog(@ApiParam(value = "Id of agent or client in dialog", required = true) @RequestParam(value="id") int id) { return users.getDialog(id); }
 
+    @ApiOperation(value = "Get all awaiting (without agent) clients")
     @GetMapping("/awaitingClients")
-    public List<Client> getAwaitingClients(Users users) { return users.getFreeClients(); }
+    public List<Client> getAwaitingClients() { return users.getFreeClients(); }
 
+    @ApiOperation(value = "Get client by id")
     @GetMapping("/client")
-    public Client getClient(@RequestParam(value="id") int id,
-                            Users users) {
+    public Client getClient(@ApiParam(value = "Id of the client", required = true) @RequestParam(value="id") int id) {
         return users.getClient(id);
     }
 }
