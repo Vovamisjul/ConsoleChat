@@ -12,6 +12,7 @@ class Controller {
                 $("#register").hide();
                 $("#login").hide();
                 $("#dialog").show();
+                window.localStorage.setItem("token", data.token);
                 this.user.register(data.userId, data.userType);
                 let paragraph = "<p>" + data.message + "</p>";
                 $("#dialog .correspondence").empty();

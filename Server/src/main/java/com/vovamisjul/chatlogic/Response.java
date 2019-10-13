@@ -9,10 +9,12 @@ public class Response {
     private String message;
     private int userId;
     private String userType;
+    private String token;
 
-    public Response(String message, int userId, String userType) {
+    public Response(String message, int userId, String userType, String token) {
         this.message = message;
         this.userId = userId;
         this.userType = userType;
+        this.token = token;
     }
 }

@@ -6,8 +6,8 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery-3.4.1.min.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery-ui.min.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jsencrypt.js"></script>
-    <script src="${pageContext.request.contextPath}/resources/js/User.js"></script>
-    <script src="${pageContext.request.contextPath}/resources/js/Controller.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/user.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/controller.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/chat.js"></script>
     <title>Chat</title>
 </head>
@@ -27,7 +27,7 @@
     </div>
     <div style="display: flex">
         <div id="register" class="form">
-            <p>LOGIN</p>
+            <p>REGISTRATION</p>
             <p>
                 <input id="reg_name" name="name" placeholder="Your name"/>
             </p>
@@ -45,7 +45,7 @@
             </p>
         </div>
         <div id="login" class="form">
-            <p>REGISTRATION</p>
+            <p>LOGIN</p>
             <p>
                 <input id="login_name" name="name" placeholder="Your name"/>
             </p>

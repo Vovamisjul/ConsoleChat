@@ -28,7 +28,7 @@ public class DataBaseController {
         try(Connection connection = DriverManager.getConnection(connectionURL, db_user, db_password)) {
             PreparedStatement statement = connection.prepareStatement("select * from users where name=?");
             statement.setString(1, name);
-            ResultSet result = statement.executeQuery();;
+            ResultSet result = statement.executeQuery();
             if (result.next())
                 throw new IllegalArgumentException();
             statement = connection.prepareStatement("insert into users values (null, ?, ?)", Statement.RETURN_GENERATED_KEYS);

@@ -4,6 +4,7 @@ import com.vovamisjul.chatlogic.Dialog;
 import com.vovamisjul.chatlogic.Message;
 import com.vovamisjul.chatlogic.Response;
 import com.vovamisjul.chatlogic.Users;
+import com.vovamisjul.chatlogic.security.jwt.JwtTokenProvider;
 import com.vovamisjul.chatlogic.user.AbstractUser;
 import com.vovamisjul.chatlogic.user.Agent;
 import com.vovamisjul.chatlogic.user.Client;
@@ -12,22 +13,31 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class ChatController {
+
     private Users users;
+
+    private JwtTokenProvider jwtTokenProvider;
+
     protected static final Logger logger = LogManager.getLogger(ChatController.class);
 
-    public ChatController(Users users) {
+    public ChatController(Users users, JwtTokenProvider jwtTokenProvider) {
         this.users = users;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @ApiOperation(value = "Exit from chat")
@@ -64,13 +74,20 @@ public class ChatController {
 
     @ApiOperation(value = "Register user with name and type", response = Response.class)
     @PostMapping("/register")
-    public Response register(@ApiParam(value = "Your name", required = true) @RequestParam(value="name") String name,
-                             @ApiParam(value = "Password", required = true) @RequestParam(value="password") String password,
-                             @ApiParam(value = "Your type (agent/client)", required = true) @RequestParam(value="type") String type) {
+    public ResponseEntity register(@ApiParam(value = "Your name", required = true) @RequestParam(value="name") String name,
+                                   @ApiParam(value = "Password", required = true) @RequestParam(value="password") String password,
+                                   @ApiParam(value = "Your type (agent/client)", required = true) @RequestParam(value="type") String type) {
         try {
             int id = new DataBaseController().register(name, password, type);
             users.addNewUser(type, name, id);
-            return new Response("Welcome, " + name + " to chat!", id, type);
+            String token = jwtTokenProvider.createToken(id, type);
+            Map<Object, Object> responce = new HashMap<>();
+            responce.put("message", "Welcome, " + name + " to chat!");
+            responce.put("userId", id);
+            responce.put("userType", type);
+            responce.put("token", token);
+
+            return ResponseEntity.ok(responce);
         }
         catch (IllegalArgumentException | SQLException e) {
             logger.error(e.getMessage(), e);
@@ -86,7 +103,8 @@ public class ChatController {
             StringBuilder type = new StringBuilder();
             int id = new DataBaseController().login(name, password, type);
             users.addNewUser(type.toString(), name, id);
-            return new Response("Welcome, " + name + " to chat!", id, type.toString());
+            String token = jwtTokenProvider.createToken(id, type.toString());
+            return new Response("Welcome, " + name + " to chat!", id, type.toString(), token);
         }
         catch (IllegalArgumentException | SQLException e) {
             logger.error(e.getMessage(), e);
@@ -111,8 +129,13 @@ public class ChatController {
 
     @ApiOperation(value = "Get free (without client) agents")
     @GetMapping("/freeAgents")
-    public List<Agent> getFreeAgents() {
-        return users.getFreeAgents();
+    public List<Agent> getFreeAgents(@RequestHeader("Authorization") String token) {
+        JwtTokenProvider provider = new JwtTokenProvider(users);
+        token = provider.resolveToken(token);
+        if (provider.validateToken(token))
+            return users.getFreeAgents();
+        else
+            return null;
     }
 
     @ApiOperation(value = "Get all agents")
