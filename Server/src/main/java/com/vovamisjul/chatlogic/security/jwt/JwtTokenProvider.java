@@ -53,15 +53,6 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-//    Authentication getAuthentication(String token) {
-//        UserDetails userDetails = loadUserById(getUserId(token));
-//        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-//    }
-
-    private String getUserId(String token) {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
-    }
-
     private String resolveToken(String header) {
         if (header != null && (header.startsWith("Bearer_") || header.startsWith("Bearer "))) {
             return header.substring("Bearer_".length());

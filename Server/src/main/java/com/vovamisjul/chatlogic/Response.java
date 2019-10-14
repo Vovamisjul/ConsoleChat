@@ -11,7 +11,7 @@ public class Response {
     private String userType;
     private String token;
 
-    public Response(String message, int userId, String userType, String token) {
+    public Response(String message, String token) {
         this.message = message;
         this.userId = userId;
         this.userType = userType;

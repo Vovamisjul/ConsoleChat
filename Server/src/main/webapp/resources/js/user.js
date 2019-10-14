@@ -1,8 +1,6 @@
 class User {
     #registered = false;
-    register(id, type) {
-        this.id = id;
-        this.type = type;
+    register() {
         this.#registered = true;
     }
     unregister() {

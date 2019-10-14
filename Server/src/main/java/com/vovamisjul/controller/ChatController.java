@@ -4,6 +4,9 @@ import com.vovamisjul.chatlogic.Dialog;
 import com.vovamisjul.chatlogic.Message;
 import com.vovamisjul.chatlogic.Response;
 import com.vovamisjul.chatlogic.Users;
+import com.vovamisjul.chatlogic.exceptions.BusyNameException;
+import com.vovamisjul.chatlogic.exceptions.ForbiddenException;
+import com.vovamisjul.chatlogic.exceptions.WrongInitialsException;
 import com.vovamisjul.chatlogic.security.jwt.JwtTokenProvider;
 import com.vovamisjul.chatlogic.security.jwt.JwtUser;
 import com.vovamisjul.chatlogic.user.AbstractUser;
@@ -14,7 +17,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -23,9 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 public class ChatController {
@@ -51,6 +51,8 @@ public class ChatController {
     @PostMapping("/exit")
     public void exit(@RequestHeader("Authorization") String token) {
         JwtUser user = tokenProvider.validateTokenAll(token);
+        if (user == null)
+            throw new ForbiddenException();
         Dialog dialog = users.getDialog(user.getId());
         if (dialog != null)
             dialog.exit(user.getType(), users);
@@ -60,6 +62,8 @@ public class ChatController {
     @PostMapping("/leave")
     public void leave(@RequestHeader("Authorization") String token) {
         JwtUser user = tokenProvider.validateTokenAll(token);
+        if (user == null)
+            throw new ForbiddenException();
         Dialog dialog = users.getDialog(user.getId());
         if (dialog != null)
             dialog.leave(users);
@@ -69,6 +73,8 @@ public class ChatController {
     @GetMapping("/getMessages")
     public List<Message> getMessages(@RequestHeader("Authorization") String token) {
         JwtUser user = tokenProvider.validateTokenAll(token);
+        if (user == null)
+            throw new ForbiddenException();
         Dialog dialog = users.getDialog(user.getId());
         if (dialog == null)
             return null;
@@ -82,24 +88,18 @@ public class ChatController {
 
     @ApiOperation(value = "Register user with name and type", response = Response.class)
     @PostMapping("/register")
-    public ResponseEntity register(@ApiParam(value = "Your name", required = true) @RequestParam(value="name") String name,
+    public Response register(@ApiParam(value = "Your name", required = true) @RequestParam(value="name") String name,
                                    @ApiParam(value = "Password", required = true) @RequestParam(value="password") String password,
                                    @ApiParam(value = "Your type (agent/client)", required = true) @RequestParam(value="type") String type) {
         try {
             int id = dataBaseController.register(name, password, type);
             users.addNewUser(type, name, id);
             String token = jwtTokenProvider.createToken(id, type, password);
-            Map<Object, Object> responce = new HashMap<>();
-            responce.put("message", "Welcome, " + name + " to chat!");
-            responce.put("userId", id);
-            responce.put("userType", type);
-            responce.put("token", token);
-
-            return ResponseEntity.ok(responce);
+            return new Response("Welcome, " + name + " to chat!", token);
         }
         catch (IllegalArgumentException | SQLException e) {
             logger.error(e.getMessage(), e);
-            return null;
+            throw new BusyNameException();
         }
     }
 
@@ -112,11 +112,11 @@ public class ChatController {
             int id = dataBaseController.login(name, password, type);
             users.addNewUser(type.toString(), name, id);
             String token = jwtTokenProvider.createToken(id, type.toString(), password);
-            return new Response("Welcome, " + name + " to chat!", id, type.toString(), token);
+            return new Response("Welcome, " + name + " to chat!", token);
         }
         catch (IllegalArgumentException | SQLException e) {
             logger.error(e.getMessage(), e);
-            return null;
+            throw new WrongInitialsException();
         }
     }
 
@@ -125,6 +125,8 @@ public class ChatController {
     public void sendMessage(@RequestHeader("Authorization") String token,
                             @ApiParam(value = "Message to send", required = true) @RequestParam(value="message") String message) {
         JwtUser user = tokenProvider.validateTokenAll(token);
+        if (user == null)
+            throw new ForbiddenException();
         Dialog dialog = users.getDialog(user.getId());
         if (dialog != null) {
             dialog.sendTo(user.getType(), message);
@@ -141,7 +143,7 @@ public class ChatController {
         if (tokenProvider.validateTokenAgent(token) != null)
             return users.getFreeAgents();
         else
-            return null;
+            throw new ForbiddenException();
     }
 
     @ApiOperation(value = "Get all agents")
@@ -150,7 +152,7 @@ public class ChatController {
         if (tokenProvider.validateTokenAgent(token) != null)
             return users.getAllAgents();
         else
-            return null;
+            throw new ForbiddenException();
     }
 
     @ApiOperation(value = "Get agent by id")
@@ -160,7 +162,7 @@ public class ChatController {
         if (tokenProvider.validateTokenAgent(token) != null)
             return users.getAgent(id);
         else
-            return null;
+            throw new ForbiddenException();
     }
 
     @ApiOperation(value = "Get free agents count")
@@ -169,7 +171,7 @@ public class ChatController {
         if (tokenProvider.validateTokenAgent(token) != null)
             return users.getFreeAgents().size();
         else
-            return -1;
+            throw new ForbiddenException();
     }
 
     @ApiOperation(value = "Get all active dialogs")
@@ -178,7 +180,7 @@ public class ChatController {
         if (tokenProvider.validateTokenAgent(token) != null)
             return users.getDialogs();
         else
-            return null;
+            throw new ForbiddenException();
     }
 
     @ApiOperation(value = "Get dialog by id")
@@ -188,7 +190,7 @@ public class ChatController {
         if (tokenProvider.validateTokenAgent(token) != null)
             return users.getDialog(id);
         else
-            return null;
+            throw new ForbiddenException();
     }
 
     @ApiOperation(value = "Get all awaiting (without agent) clients")
@@ -197,7 +199,7 @@ public class ChatController {
         if (tokenProvider.validateTokenAgent(token) != null)
             return users.getFreeClients();
         else
-            return null;
+            throw new ForbiddenException();
     }
 
     @ApiOperation(value = "Get client by id")
@@ -207,6 +209,6 @@ public class ChatController {
         if (tokenProvider.validateTokenAgent(token) != null)
             return users.getClient(id);
         else
-            return null;
+            throw new ForbiddenException();
     }
 }

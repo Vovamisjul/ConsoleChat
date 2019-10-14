@@ -14,12 +14,14 @@ class Controller {
                 $("#login").hide();
                 $("#dialog").show();
                 this.token = data.token;
-                this.user.register(data.userId, data.userType);
+                this.user.register();
                 let paragraph = "<p>" + data.message + "</p>";
                 $("#dialog .correspondence").empty();
                 $("#dialog .correspondence").append(paragraph);
             }.bind(this),
-            error: alert("Choose other name"),
+            error: function (error) {
+                alert("This name is busy");
+            },
             dataType: "json"
         })
     }
@@ -33,12 +35,14 @@ class Controller {
                 $("#login").hide();
                 $("#dialog").show();
                 this.token = data.token;
-                this.user.register(data.userId, data.userType);
+                this.user.register();
                 let paragraph = `<p>${data.message}</p>`;
                 $("#dialog .correspondence").empty();
                 $("#dialog .correspondence").append(paragraph);
             }.bind(this),
-            error: alert("Incorrect login or password"),
+            error: function (error) {
+                alert("Wrong login or password");
+            },
             dataType: "json"
         })
     }
@@ -54,6 +58,12 @@ class Controller {
             data:{message: message},
             headers: {
                 'Authorization': `Bearer ${this.token}`
+            },
+            error: function (error) {
+                if (error.status >= 400) {
+                    alert("Token time is expired, relogin");
+                    location.reload();
+                }
             }
         });
     }
@@ -71,7 +81,13 @@ class Controller {
                         $("#dialog .correspondence").append(paragraph);
                     }
                 },
-                dataType: "json"
+                dataType: "json",
+                error: function (error) {
+                    if (error.status >= 400) {
+                        alert("Token time is expired, relogin");
+                        location.reload();
+                    }
+                }
             });
     }
     leave() {
@@ -81,6 +97,12 @@ class Controller {
                 type: "POST",
                 headers: {
                     'Authorization': `Bearer ${this.token}`
+                },
+                error: function (error) {
+                    if (error.status >= 400) {
+                        alert("Token time is expired, relogin");
+                        location.reload();
+                    }
                 }
             });
     }
@@ -97,7 +119,13 @@ class Controller {
                     $("#register").show();
                     $("#login").show();
                     $("#dialog").hide();
-                }.bind(this)
+                }.bind(this),
+                error: function (error) {
+                    if (error.status >= 400) {
+                        alert("Token time is expired, relogin");
+                        location.reload();
+                    }
+                }
             });
     }
 }
