@@ -5,6 +5,7 @@ import com.vovamisjul.chatlogic.Message;
 import com.vovamisjul.chatlogic.Response;
 import com.vovamisjul.chatlogic.Users;
 import com.vovamisjul.chatlogic.security.jwt.JwtTokenProvider;
+import com.vovamisjul.chatlogic.security.jwt.JwtUser;
 import com.vovamisjul.chatlogic.user.AbstractUser;
 import com.vovamisjul.chatlogic.user.Agent;
 import com.vovamisjul.chatlogic.user.Client;
@@ -33,40 +34,47 @@ public class ChatController {
 
     private JwtTokenProvider jwtTokenProvider;
 
+    private DataBaseController dataBaseController;
+    private JwtTokenProvider tokenProvider;
+
     protected static final Logger logger = LogManager.getLogger(ChatController.class);
 
-    public ChatController(Users users, JwtTokenProvider jwtTokenProvider) {
+    public ChatController(Users users, JwtTokenProvider jwtTokenProvider, DataBaseController dataBaseController,
+                          JwtTokenProvider tokenProvider) {
         this.users = users;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.dataBaseController = dataBaseController;
+        this.tokenProvider = tokenProvider;
     }
 
     @ApiOperation(value = "Exit from chat")
     @PostMapping("/exit")
-    public void exit(@ApiParam(value = "Your id issued at registration", required = true) @RequestParam(value="userId") int userId,
-                     @ApiParam(value = "Your type (client/agent)", required = true) @RequestParam(value="userType") String userType) {
-        Dialog dialog = users.getDialog(userId);
+    public void exit(@RequestHeader("Authorization") String token) {
+        JwtUser user = tokenProvider.validateTokenAll(token);
+        Dialog dialog = users.getDialog(user.getId());
         if (dialog != null)
-            dialog.exit(userType, users);
+            dialog.exit(user.getType(), users);
     }
 
     @ApiOperation(value = "Leave from chat (you will continue chatting with another agent/client)")
     @PostMapping("/leave")
-    public void leave(@ApiParam(value = "Your id issued at registration", required = true) @RequestParam(value="userId") int userId) {
-        Dialog dialog = users.getDialog(userId);
+    public void leave(@RequestHeader("Authorization") String token) {
+        JwtUser user = tokenProvider.validateTokenAll(token);
+        Dialog dialog = users.getDialog(user.getId());
         if (dialog != null)
             dialog.leave(users);
     }
 
     @ApiOperation(value = "Get unread messages")
     @GetMapping("/getMessages")
-    public List<Message> getMessages(@ApiParam(value = "Your id issued at registration", required = true) @RequestParam(value="userId") int userId,
-                                     @ApiParam(value = "Your type (agent/client)", required = true) @RequestParam(value="userType") String userType) {
-        Dialog dialog = users.getDialog(userId);
+    public List<Message> getMessages(@RequestHeader("Authorization") String token) {
+        JwtUser user = tokenProvider.validateTokenAll(token);
+        Dialog dialog = users.getDialog(user.getId());
         if (dialog == null)
             return null;
         Message message;
         List<Message> messages = new ArrayList<>();
-        while ((message = dialog.pollFrom(userType)) != null) {
+        while ((message = dialog.pollFrom(user.getType())) != null) {
             messages.add(message);
         }
         return messages;
@@ -78,9 +86,9 @@ public class ChatController {
                                    @ApiParam(value = "Password", required = true) @RequestParam(value="password") String password,
                                    @ApiParam(value = "Your type (agent/client)", required = true) @RequestParam(value="type") String type) {
         try {
-            int id = new DataBaseController().register(name, password, type);
+            int id = dataBaseController.register(name, password, type);
             users.addNewUser(type, name, id);
-            String token = jwtTokenProvider.createToken(id, type);
+            String token = jwtTokenProvider.createToken(id, type, password);
             Map<Object, Object> responce = new HashMap<>();
             responce.put("message", "Welcome, " + name + " to chat!");
             responce.put("userId", id);
@@ -101,9 +109,9 @@ public class ChatController {
                              @ApiParam(value = "Password", required = true) @RequestParam(value="password") String password) {
         try {
             StringBuilder type = new StringBuilder();
-            int id = new DataBaseController().login(name, password, type);
+            int id = dataBaseController.login(name, password, type);
             users.addNewUser(type.toString(), name, id);
-            String token = jwtTokenProvider.createToken(id, type.toString());
+            String token = jwtTokenProvider.createToken(id, type.toString(), password);
             return new Response("Welcome, " + name + " to chat!", id, type.toString(), token);
         }
         catch (IllegalArgumentException | SQLException e) {
@@ -114,25 +122,23 @@ public class ChatController {
 
     @ApiOperation(value = "Send message to server")
     @PostMapping("/sendMessage")
-    public void sendMessage(@ApiParam(value = "Your id issued at registration", required = true) @RequestParam(value="userId") int userId,
-                            @ApiParam(value = "Your type (agent/client)", required = true) @RequestParam(value="userType") String userType,
+    public void sendMessage(@RequestHeader("Authorization") String token,
                             @ApiParam(value = "Message to send", required = true) @RequestParam(value="message") String message) {
-        Dialog dialog = users.getDialog(userId);
+        JwtUser user = tokenProvider.validateTokenAll(token);
+        Dialog dialog = users.getDialog(user.getId());
         if (dialog != null) {
-            dialog.sendTo(userType, message);
+            dialog.sendTo(user.getType(), message);
         } else {
-            AbstractUser user = users.getUser(userId);
-            if (user != null)
-                user.addNewMessage(message);
+            AbstractUser aUser = users.getUser(user.getId());
+            if (aUser != null)
+                aUser.addNewMessage(message);
         }
     }
 
     @ApiOperation(value = "Get free (without client) agents")
     @GetMapping("/freeAgents")
     public List<Agent> getFreeAgents(@RequestHeader("Authorization") String token) {
-        JwtTokenProvider provider = new JwtTokenProvider(users);
-        token = provider.resolveToken(token);
-        if (provider.validateToken(token))
+        if (tokenProvider.validateTokenAgent(token) != null)
             return users.getFreeAgents();
         else
             return null;
@@ -140,35 +146,67 @@ public class ChatController {
 
     @ApiOperation(value = "Get all agents")
     @GetMapping("/allAgents")
-    public List<Agent> getAllAgents() {
-        return users.getAllAgents();
+    public List<Agent> getAllAgents(@RequestHeader("Authorization") String token) {
+        if (tokenProvider.validateTokenAgent(token) != null)
+            return users.getAllAgents();
+        else
+            return null;
     }
 
     @ApiOperation(value = "Get agent by id")
     @GetMapping("/agent")
-    public Agent getAgent(@ApiParam(value = "Id of the agent", required = true) @RequestParam(value="id") int id) {
-        return users.getAgent(id);
+    public Agent getAgent(@RequestHeader("Authorization") String token,
+                          @ApiParam(value = "Id of the agent", required = true) @RequestParam(value="id") int id) {
+        if (tokenProvider.validateTokenAgent(token) != null)
+            return users.getAgent(id);
+        else
+            return null;
     }
 
     @ApiOperation(value = "Get free agents count")
     @GetMapping("/freeAgentsCount")
-    public int getFreeAgentsCount() { return users.getFreeAgents().size(); }
+    public int getFreeAgentsCount(@RequestHeader("Authorization") String token) {
+        if (tokenProvider.validateTokenAgent(token) != null)
+            return users.getFreeAgents().size();
+        else
+            return -1;
+    }
 
     @ApiOperation(value = "Get all active dialogs")
     @GetMapping("/dialogs")
-    public List<Dialog> getDialog() { return users.getDialogs(); }
+    public List<Dialog> getDialog(@RequestHeader("Authorization") String token) {
+        if (tokenProvider.validateTokenAgent(token) != null)
+            return users.getDialogs();
+        else
+            return null;
+    }
 
     @ApiOperation(value = "Get dialog by id")
     @GetMapping("/dialog")
-    public Dialog getDialog(@ApiParam(value = "Id of agent or client in dialog", required = true) @RequestParam(value="id") int id) { return users.getDialog(id); }
+    public Dialog getDialog(@RequestHeader("Authorization") String token,
+                            @ApiParam(value = "Id of agent or client in dialog", required = true) @RequestParam(value="id") int id) {
+        if (tokenProvider.validateTokenAgent(token) != null)
+            return users.getDialog(id);
+        else
+            return null;
+    }
 
     @ApiOperation(value = "Get all awaiting (without agent) clients")
     @GetMapping("/awaitingClients")
-    public List<Client> getAwaitingClients() { return users.getFreeClients(); }
+    public List<Client> getAwaitingClients(@RequestHeader("Authorization") String token) {
+        if (tokenProvider.validateTokenAgent(token) != null)
+            return users.getFreeClients();
+        else
+            return null;
+    }
 
     @ApiOperation(value = "Get client by id")
     @GetMapping("/client")
-    public Client getClient(@ApiParam(value = "Id of the client", required = true) @RequestParam(value="id") int id) {
-        return users.getClient(id);
+    public Client getClient(@RequestHeader("Authorization") String token,
+                            @ApiParam(value = "Id of the client", required = true) @RequestParam(value="id") int id) {
+        if (tokenProvider.validateTokenAgent(token) != null)
+            return users.getClient(id);
+        else
+            return null;
     }
 }

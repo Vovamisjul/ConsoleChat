@@ -2,6 +2,7 @@ package com.vovamisjul.database;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+@Component
 public class DataBaseController {
     private final String db_user = "root";
     private final String db_password = "";
@@ -55,6 +57,18 @@ public class DataBaseController {
             if (result.next()) {
                 type.append(result.getString("type"));
                 return result.getInt(1);
+            }
+            throw new IllegalArgumentException();
+        }
+    }
+
+    public boolean checkUser(String id, String password, String type) throws SQLException {
+        try(Connection connection = DriverManager.getConnection(connectionURL, db_user, db_password)) {
+            PreparedStatement statement = connection.prepareStatement("select * from users join passwords on passwords.id=users.id where users.id=?");
+            statement.setString(1, id);
+            ResultSet result = statement.executeQuery();
+            if (result.next()) {
+                return result.getString("password").equals(password) && result.getString("type").equals(type);
             }
             throw new IllegalArgumentException();
         }

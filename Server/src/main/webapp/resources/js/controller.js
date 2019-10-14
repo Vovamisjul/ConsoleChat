@@ -1,5 +1,6 @@
 class Controller {
 
+    token;
     constructor(user) {
         this.user = user;
     }
@@ -7,12 +8,12 @@ class Controller {
         $.ajax({
             url: "/chat/register",
             type: "POST",
-            data:{name: $("#reg_name").val(), password: $("#reg_password").val(), type: $("#reg_type").val()},
+            data:{name: $("#reg_name").val(), password: sha512($("#reg_password").val()), type: $("#reg_type").val()},
             success: function (data) {
                 $("#register").hide();
                 $("#login").hide();
                 $("#dialog").show();
-                window.localStorage.setItem("token", data.token);
+                this.token = data.token;
                 this.user.register(data.userId, data.userType);
                 let paragraph = "<p>" + data.message + "</p>";
                 $("#dialog .correspondence").empty();
@@ -26,13 +27,14 @@ class Controller {
         $.ajax({
             url: "/chat/login",
             type: "POST",
-            data:{name: $("#login_name").val(), password: $("#login_password").val()},
+            data:{name: $("#login_name").val(), password: sha512($("#login_password").val())},
             success: function (data) {
                 $("#register").hide();
                 $("#login").hide();
                 $("#dialog").show();
+                this.token = data.token;
                 this.user.register(data.userId, data.userType);
-                let paragraph = "<p>" + data.message + "</p>";
+                let paragraph = `<p>${data.message}</p>`;
                 $("#dialog .correspondence").empty();
                 $("#dialog .correspondence").append(paragraph);
             }.bind(this),
@@ -43,13 +45,16 @@ class Controller {
     sendMessage() {
         let input = $("#dialog input");
         let message = input.val();
-        let yourMessage = "<p> You: " + message + "</p>";
+        let yourMessage = `<p> You: ${message}</p>`;
         $("#dialog .correspondence").append(yourMessage);
         input.val("");
         $.ajax({
             url:"/chat/sendMessage",
             type:"POST",
-            data:{userType: this.user.type, message: message, userId: this.user.id}
+            data:{message: message},
+            headers: {
+                'Authorization': `Bearer ${this.token}`
+            }
         });
     }
     getMessage() {
@@ -57,7 +62,9 @@ class Controller {
             $.ajax({
                 url: "/chat/getMessages",
                 type: "GET",
-                data: {userType: this.user.type, userId: this.user.id},
+                headers: {
+                    'Authorization': `Bearer ${this.token}`
+                },
                 success: function (message) {
                     for (let i in message) {
                         let paragraph = "<p>" + message[i].from + ": " + message[i].text + "</p>";
@@ -72,7 +79,9 @@ class Controller {
             $.ajax({
                 url: "/chat/leave",
                 type: "POST",
-                data: {userId: this.user.id}
+                headers: {
+                    'Authorization': `Bearer ${this.token}`
+                }
             });
     }
     exit() {
@@ -80,7 +89,9 @@ class Controller {
             $.ajax({
                 url: "/chat/exit",
                 type: "POST",
-                data: {userType: this.user.type, userId: this.user.id},
+                headers: {
+                    'Authorization': `Bearer ${this.token}`
+                },
                 success: function () {
                     this.user.unregister();
                     $("#register").show();

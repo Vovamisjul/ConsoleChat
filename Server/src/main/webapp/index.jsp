@@ -5,7 +5,7 @@
     <link href="${pageContext.request.contextPath}/resources/css/jquery-ui.css" rel="stylesheet">
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery-3.4.1.min.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jsencrypt.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/sha512.min.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/user.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/controller.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/chat.js"></script>
